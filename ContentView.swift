@@ -71,7 +71,6 @@ struct ShibaResult {
 
     var level: Int        { shibaLevel.rawValue }
     var levelName: String { shibaLevel.name }
-    var levelColor: Color { shibaLevel.color }
 
     var displayName: String {
         guard breedName != "不明" && breedName != "柴犬" && breedName != "その他の犬" else {
@@ -438,21 +437,6 @@ struct ShibaResultPanel: View {
         }
     }
 
-    @ViewBuilder
-    private func tagView(_ text: String, bg: Color, fg: Color, border: Bool = false) -> some View {
-        Text(text)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(fg)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(bg)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(border ? Color(white: 0.75) : Color.clear, lineWidth: 1)
-            )
-    }
-
     private func animateToValue(_ target: Int) {
         animationTask?.cancel()
         animatedProgress = CGFloat(target) / 100.0
@@ -470,45 +454,61 @@ struct ShibaResultPanel: View {
     }
 }
 
-// MARK: - DogResultBadgeRow（認定証・カード共通）
+// MARK: - 共有ユーティリティ
 
-struct DogResultBadgeRow: View {
-    let result: ShibaResult
+private func certificateFormattedDate() -> String {
+    let f = DateFormatter()
+    f.locale = Locale(identifier: "ja_JP")
+    f.dateFormat = "yyyy年M月d日 認定"
+    return f.string(from: Date())
+}
+
+// MARK: - CertificateCoreContent（CertificateView / CertificateCardView 共通）
+
+struct CertificateCoreContent: View {
+    let data: CertificateData
+    var isStatic: Bool = false
 
     var body: some View {
-        HStack(spacing: 6) {
-            Text("Lv.\(result.level)")
-                .font(.caption.bold())
-                .foregroundColor(result.levelColor)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(result.levelColor.opacity(0.15))
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(result.levelColor, lineWidth: 1))
+        // 写真 + waku2
+        ZStack {
+            Image(uiImage: data.cutoutImage)
+                .resizable()
+                .scaledToFill()
+                .frame(height: 260)
+                .clipped()
+            Image("waku2")
+                .resizable()
+                .scaledToFill()
+                .frame(height: 260)
+                .clipped()
+                .allowsHitTesting(false)
+        }
+        .frame(height: 260)
+        .padding(.horizontal, 16)
 
-            Text(result.levelName)
-                .font(.title3.bold())
-                .foregroundColor(Color(red: 0.4, green: 0.2, blue: 0.0))
+        // 結果パネル
+        ShibaResultPanel(result: data.result, peakPercentage: 0, isStatic: isStatic)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
 
-            if result.colorType != "不明" {
-                Text(result.colorType)
-                    .font(.caption.bold())
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.brown)
-                    .clipShape(Capsule())
+        // 警告ラベル
+        if let label = data.screenLabel {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.orange)
+                    .font(.system(size: 11, weight: .bold))
+                Text("\(label)が検出されました。認定証が仮のものになります")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(Color(white: 0.15))
             }
-
-            if result.breedName != "不明" {
-                Text(result.breedName)
-                    .font(.caption.bold())
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(red: 0.3, green: 0.5, blue: 0.8))
-                    .clipShape(Capsule())
-            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
         }
     }
 }
@@ -536,7 +536,7 @@ struct CertificateView: View {
                             .foregroundColor(Color(white: 0.55))
                             .kerning(2)
                         Spacer()
-                        Text(formattedDate())
+                        Text(certificateFormattedDate())
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(Color(white: 0.55))
                     }
@@ -544,49 +544,7 @@ struct CertificateView: View {
                     .padding(.top, 60)
                     .padding(.bottom, 16)
 
-                    // 写真 + waku2
-                    ZStack {
-                        Image(uiImage: data.cutoutImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 260)
-                            .clipped()
-                        Image("waku2")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 260)
-                            .clipped()
-                            .allowsHitTesting(false)
-                    }
-                    .frame(height: 260)
-                    .padding(.horizontal, 16)
-
-                    // 結果パネル（撮影画面と同一レイアウト）
-                    ShibaResultPanel(
-                        result: data.result,
-                        peakPercentage: 0
-                    )
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
-
-                    // 認定文 + 警告
-                    if let label = data.screenLabel {
-                        HStack(spacing: 6) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.orange)
-                                .font(.system(size: 11, weight: .bold))
-                            Text("\(label)が検出されました。認定証が仮のものになります")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundColor(Color(white: 0.15))
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                    }
+                    CertificateCoreContent(data: data)
 
                     // 保存ボタン
                     Button(action: saveImage) {
@@ -665,28 +623,6 @@ struct CertificateView: View {
         }
     }
 
-    @ViewBuilder
-    private func certTag(_ text: String, bg: Color, fg: Color, border: Bool = false) -> some View {
-        Text(text)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(fg)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(bg)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(border ? Color(white: 0.75) : Color.clear, lineWidth: 1)
-            )
-    }
-
-    private func formattedDate() -> String {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ja_JP")
-        f.dateFormat = "yyyy年M月d日 認定"
-        return f.string(from: Date())
-    }
-
     private func saveImage() {
         let renderer = ImageRenderer(content:
             CertificateCardView(data: data)
@@ -751,59 +687,20 @@ struct CertificateCardView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // ヘッダー（CertificateView と同一）
             HStack {
                 Text("CERTIFICATE")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(Color(white: 0.55))
                     .kerning(2)
                 Spacer()
-                Text(formattedDate())
+                Text(certificateFormattedDate())
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(Color(white: 0.55))
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
 
-            // 写真 + waku2（CertificateView と同一）
-            ZStack {
-                Image(uiImage: data.cutoutImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 260)
-                    .clipped()
-                Image("waku2")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 260)
-                    .clipped()
-            }
-            .frame(height: 260)
-            .padding(.horizontal, 16)
-
-            // 結果パネル（CertificateView と同一・静的レンダリング）
-            ShibaResultPanel(result: data.result, peakPercentage: 0, isStatic: true)
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-
-            // 警告ラベル（CertificateView と同一）
-            if let label = data.screenLabel {
-                HStack(spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 11, weight: .bold))
-                    Text("\(label)が検出されました。認定証が仮のものになります")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(Color(white: 0.15))
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-            }
+            CertificateCoreContent(data: data, isStatic: true)
 
             // 認定文
             Text("上記の犬は柴犬度\(data.result.percentage)%と認定されました")
@@ -815,13 +712,6 @@ struct CertificateCardView: View {
                 .padding(.bottom, 20)
         }
         .background(Color(white: 0.94))
-    }
-
-    private func formattedDate() -> String {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ja_JP")
-        f.dateFormat = "yyyy年M月d日 認定"
-        return f.string(from: Date())
     }
 }
 

@@ -1,4 +1,3 @@
-//___FILEHEADER___
 import SwiftUI
 
 class AppDelegate: NSObject, UIApplicationDelegate {
