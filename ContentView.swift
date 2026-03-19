@@ -130,7 +130,7 @@ struct ContentView: View {
                 GeometryReader { geo in
                     // 回転時に端が切れないよう画面より大きいサイズで配置
                     let scale: CGFloat = 1.2
-                    Image("waku6")
+                    Image("waku7")
                         .resizable()
                         .frame(width: geo.size.width * scale, height: geo.size.height * scale)
                         .position(x: geo.size.width / 2, y: geo.size.height / 2)
