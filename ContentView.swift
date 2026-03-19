@@ -1179,14 +1179,38 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
 
             let topResults = Array(results.prefix(17))
 
-            let similarityScore = topResults.reduce(0.0) { sum, obs in
+            let top1 = topResults.first
+            let top1Class      = top1?.identifier ?? "other_dog"
+            let top1Confidence = Double(top1?.confidence ?? 0)
+
+            // A-1: 信頼度閾値 — 低信頼度クラスをスコアから除外
+            let confidenceThreshold = 0.15
+            let filteredResults = topResults.filter { Double($0.confidence) > confidenceThreshold }
+
+            let similarityScore = filteredResults.reduce(0.0) { sum, obs in
                 let weight = CameraManager.similarityWeight[obs.identifier] ?? 0.0
                 return sum + Double(obs.confidence) * weight
             }
 
-            let percentage = min(Int(similarityScore * 100), 100)
-            let topClass   = topResults.first?.identifier ?? "other_dog"
-            let breedName  = CameraManager.breedNameJP[topClass] ?? "その他の犬"
+            var percentage = min(Int(similarityScore * 100), 100)
+
+            // A-2: Top-1 が other_dog で高信頼度 → スコアを上限30に抑制
+            if top1Class == "other_dog" && top1Confidence >= 0.40 {
+                percentage = min(percentage, 30)
+            }
+
+            // A-3: Top-1 の信頼度が低い（モデルが迷っている）→ スコアを半減
+            if top1Confidence < 0.25 {
+                percentage = percentage / 2
+            }
+
+            // displayName用: 信頼度が十分高い場合のみ犬種名を表示
+            let breedName: String
+            if top1Class != "other_dog" && top1Confidence >= 0.35 {
+                breedName = CameraManager.breedNameJP[top1Class] ?? "その他の犬"
+            } else {
+                breedName = "不明"
+            }
 
             let result = ShibaResult.from(
                 percentage: percentage,
