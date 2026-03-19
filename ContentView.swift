@@ -304,6 +304,7 @@ struct ShibaResultPanel: View {
     let peakPercentage: Int
     var onReset: (() -> Void)? = nil
     var isStatic: Bool = false
+    var footnote: String? = nil
 
     @State private var displayedPercentage: Int = 0
     @State private var animatedProgress: CGFloat = 0
@@ -346,85 +347,98 @@ struct ShibaResultPanel: View {
             .padding(.top, 14)
             .padding(.bottom, 10)
 
-            // セパレーター
             Rectangle().fill(Color(white: 0.88)).frame(height: 1)
 
-            // Row 2: リセット | プログレスバー | PEAK
-            HStack(spacing: 10) {
-                if let onReset {
-                    Button(action: onReset) {
-                        HStack(spacing: 3) {
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 10, weight: .bold))
-                            Text("リセット")
-                                .font(.system(size: 10, weight: .bold))
+            if !isStatic {
+                // Row 2: リセット | プログレスバー | PEAK
+                HStack(spacing: 10) {
+                    if let onReset {
+                        Button(action: onReset) {
+                            HStack(spacing: 3) {
+                                Image(systemName: "arrow.counterclockwise")
+                                    .font(.system(size: 10, weight: .bold))
+                                Text("リセット")
+                                    .font(.system(size: 10, weight: .bold))
+                            }
+                            .foregroundColor(Color(white: 0.35))
                         }
-                        .foregroundColor(Color(white: 0.35))
                     }
-                }
 
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Rectangle().fill(Color(white: 0.9)).frame(height: 3)
-                        Rectangle()
-                            .fill(Color.orange)
-                            .frame(width: geo.size.width * shownProgress, height: 3)
-                            .animation(.spring(response: 0.6, dampingFraction: 0.8), value: animatedProgress)
-                        if peakPercentage > 0 {
-                            let peakX = geo.size.width * CGFloat(peakPercentage) / 100
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Rectangle().fill(Color(white: 0.9)).frame(height: 3)
                             Rectangle()
-                                .fill(Color(white: 0.35))
-                                .frame(width: 1.5, height: 10)
-                                .position(x: peakX, y: 5)
+                                .fill(Color.orange)
+                                .frame(width: geo.size.width * shownProgress, height: 3)
+                                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: animatedProgress)
+                            if peakPercentage > 0 {
+                                let peakX = geo.size.width * CGFloat(peakPercentage) / 100
+                                Rectangle()
+                                    .fill(Color(white: 0.35))
+                                    .frame(width: 1.5, height: 10)
+                                    .position(x: peakX, y: 5)
+                            }
                         }
                     }
-                }
-                .frame(height: 3)
+                    .frame(height: 3)
 
-                if peakPercentage > 0 {
-                    Text("PEAK \(peakPercentage)%")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(Color(white: 0.5))
-                        .kerning(0.5)
-                        .fixedSize()
+                    if peakPercentage > 0 {
+                        Text("PEAK \(peakPercentage)%")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(Color(white: 0.5))
+                            .kerning(0.5)
+                            .fixedSize()
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+
+                Rectangle().fill(Color(white: 0.88)).frame(height: 1)
+
+                // Row 3: 12段階タブ（横スクロール・アクティブ自動追従）
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(ShibaLevel.allCases, id: \.self) { level in
+                                Text(level.name)
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(level == result.shibaLevel ? .white : Color(white: 0.45))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 5)
+                                    .background(level == result.shibaLevel ? Color.black : Color.clear)
+                                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(level == result.shibaLevel ? Color.clear : Color(white: 0.78), lineWidth: 1)
+                                    )
+                                    .id(level)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                    }
+                    .onChange(of: result.shibaLevel) { _, newLevel in
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            proxy.scrollTo(newLevel, anchor: .center)
+                        }
+                    }
+                    .onAppear {
+                        proxy.scrollTo(result.shibaLevel, anchor: .center)
+                    }
+                }
+
+                if let footnote {
+                    Rectangle().fill(Color(white: 0.88)).frame(height: 1)
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
 
-            // セパレーター
-            Rectangle().fill(Color(white: 0.88)).frame(height: 1)
-
-            // Row 3: 12段階タブ（横スクロール・アクティブ自動追従）
-            ScrollViewReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
-                        ForEach(ShibaLevel.allCases, id: \.self) { level in
-                            Text(level.name)
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(level == result.shibaLevel ? .white : Color(white: 0.45))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 5)
-                                .background(level == result.shibaLevel ? Color.black : Color.clear)
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(level == result.shibaLevel ? Color.clear : Color(white: 0.78), lineWidth: 1)
-                                )
-                                .id(level)
-                        }
-                    }
+            if let footnote {
+                Text(footnote)
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(white: 0.5))
+                    .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                }
-                .onChange(of: result.shibaLevel) { _, newLevel in
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        proxy.scrollTo(newLevel, anchor: .center)
-                    }
-                }
-                .onAppear {
-                    proxy.scrollTo(result.shibaLevel, anchor: .center)
-                }
+                    .padding(.vertical, 12)
             }
         }
         .background(Color.white)
@@ -468,6 +482,7 @@ private func certificateFormattedDate() -> String {
 struct CertificateCoreContent: View {
     let data: CertificateData
     var isStatic: Bool = false
+    var footnote: String? = nil
 
     var body: some View {
         // 写真 + waku2
@@ -488,7 +503,7 @@ struct CertificateCoreContent: View {
         .padding(.horizontal, 16)
 
         // 結果パネル
-        ShibaResultPanel(result: data.result, peakPercentage: 0, isStatic: isStatic)
+        ShibaResultPanel(result: data.result, peakPercentage: 0, isStatic: isStatic, footnote: footnote)
             .padding(.horizontal, 16)
             .padding(.top, 12)
 
@@ -700,16 +715,11 @@ struct CertificateCardView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
 
-            CertificateCoreContent(data: data, isStatic: true)
-
-            // 認定文
-            Text("上記の犬は柴犬度\(data.result.percentage)%と認定されました")
-                .font(.system(size: 11))
-                .foregroundColor(Color(white: 0.5))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 20)
+            CertificateCoreContent(
+                data: data,
+                isStatic: true,
+                footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
+            )
         }
         .background(Color(white: 0.94))
     }
