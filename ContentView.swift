@@ -128,9 +128,12 @@ struct ContentView: View {
 
             if camera.isDogDetected {
                 GeometryReader { geo in
-                    Image("waku2")
+                    // 回転時に端が切れないよう画面より大きいサイズで配置
+                    let scale: CGFloat = 1.2
+                    Image("waku3")
                         .resizable()
-                        .frame(width: geo.size.width, height: geo.size.height)
+                        .frame(width: geo.size.width * scale, height: geo.size.height * scale)
+                        .position(x: geo.size.width / 2, y: geo.size.height / 2)
                         .rotationEffect(.degrees(wakuAngle))
                         .animation(nil, value: wakuAngle)
                         .allowsHitTesting(false)
