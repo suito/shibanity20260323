@@ -138,6 +138,7 @@ struct ContentView: View {
                         .animation(nil, value: wakuAngle)
                         .allowsHitTesting(false)
                 }
+                .clipped()
                 .ignoresSafeArea()
                 .onAppear {
                     wakuAngle = 3
