@@ -128,7 +128,7 @@ struct ContentView: View {
 
             if camera.isDogDetected {
                 GeometryReader { geo in
-                    Image("waku2")
+                    Image("waku3")
                         .resizable()
                         .frame(width: geo.size.width, height: geo.size.height)
                         .rotationEffect(.degrees(wakuAngle))
@@ -485,14 +485,14 @@ struct CertificateCoreContent: View {
     var footnote: String? = nil
 
     var body: some View {
-        // 写真 + waku2
+        // 写真 + waku3
         ZStack {
             Image(uiImage: data.cutoutImage)
                 .resizable()
                 .scaledToFill()
                 .frame(height: 260)
                 .clipped()
-            Image("waku2")
+            Image("waku3")
                 .resizable()
                 .scaledToFill()
                 .frame(height: 260)
