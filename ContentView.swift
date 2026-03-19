@@ -813,12 +813,12 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
     // 日本語犬種名マッピング（定数）
     private static let breedNameJP: [String: String] = [
         "shiba":               "柴犬",
-        "kishu":               "紀州犬",
-        "shikoku":             "四国犬",
-        "hokkaido":            "北海道犬",
-        "kai":                 "甲斐犬",
+        "kishu":               "和犬",
+        "shikoku":             "和犬",
+        "hokkaido":            "和犬",
+        "kai":                 "和犬",
         "akita":               "秋田犬",
-        "ryukyu":              "琉球犬",
+        "ryukyu":              "和犬",
         "american_akita":      "アメリカンアキタ",
         "finnish_spitz":       "フィニッシュスピッツ",
         "jindo":               "珍島犬",
