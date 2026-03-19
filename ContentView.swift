@@ -720,6 +720,7 @@ struct CertificateCardView: View {
                 isStatic: true,
                 footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
             )
+            .padding(.bottom, 24)
         }
         .background(Color(white: 0.94))
     }
