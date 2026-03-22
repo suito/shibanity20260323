@@ -10,10 +10,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct ShibanityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @State private var showSplash = true
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .fullScreenCover(isPresented: $showSplash) {
+                    SplashView(autoClose: true) { showSplash = false }
+                }
         }
     }
 }
