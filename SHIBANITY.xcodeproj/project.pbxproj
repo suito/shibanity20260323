@@ -66,7 +66,7 @@
 			name = SHIBANITY;
 			packageProductDependencies = (
 			);
-			productName = "はなかな";
+			productName = SHIBANITY;
 			productReference = E45775842F6802F2009D3A4D /* SHIBANITY.app */;
 			productType = "com.apple.product-type.application";
 		};
