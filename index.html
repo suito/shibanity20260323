@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHIBANITY — 柴犬度カメラ</title>
+  <meta name="description" content="カメラに映ったわんこの「柴犬度」をAIで判定するiOSアプリ。">
+  <style>
+    :root {
+      --shiba: #c0622b;
+      --shiba-light: #f4e0d0;
+      --dark: #1a1a1a;
+      --text: #333;
+      --muted: #777;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: #faf8f5;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 72px 24px 64px;
+    }
+    .hero .app-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      background: var(--shiba);
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 1.05rem;
+      color: #bbb;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .btn-appstore {
+      display: inline-block;
+      background: #fff;
+      color: var(--dark);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 28px;
+      border-radius: 32px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+    .btn-appstore:hover { opacity: 0.8; }
+
+    /* Features */
+    .section {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--shiba);
+      letter-spacing: 0.05em;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .feature {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .feature .icon { font-size: 2rem; margin-bottom: 12px; }
+    .feature h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .feature p { font-size: 0.88rem; color: var(--muted); }
+
+    /* Levels */
+    .levels {
+      background: var(--shiba-light);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .levels h3 { font-weight: 700; margin-bottom: 16px; font-size: 0.95rem; color: var(--shiba); }
+    .level-list { list-style: none; }
+    .level-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(192,98,43,0.15);
+      font-size: 0.9rem;
+    }
+    .level-list li:last-child { border-bottom: none; }
+    .level-list .lv {
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: var(--shiba);
+      min-width: 32px;
+    }
+
+    /* Privacy */
+    .privacy-block {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .privacy-block ul {
+      padding-left: 1.2em;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .privacy-block ul li { margin-bottom: 8px; }
+    .privacy-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--shiba);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid var(--shiba);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-top: 1px solid #e8e4df;
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.8rem; }
+      .levels { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="app-icon">🐕</div>
+    <h1>SHIBANITY</h1>
+    <p>カメラに映ったわんこの「柴犬度」をAIがリアルタイム判定。あなたの愛犬は何レベル？</p>
+    <a class="btn-appstore" href="#" id="appstore-link">App Store で入手（準備中）</a>
+  </div>
+
+  <div class="section">
+    <h2>FEATURES</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">📷</div>
+        <h3>リアルタイム判定</h3>
+        <p>カメラを向けるだけで柴犬度をリアルタイムにスコアリング。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🏅</div>
+        <h3>認定証を発行</h3>
+        <p>撮影結果をもとに「柴犬認定証」を自動生成。写真ライブラリに保存できます。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🤖</div>
+        <h3>オンデバイスAI</h3>
+        <p>すべての判定は端末内で完結。通信不要、個人情報の送信なし。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <h2>SHIBA LEVEL</h2>
+    <div class="levels">
+      <h3>柴犬度レベル一覧</h3>
+      <ul class="level-list">
+        <li><span class="lv">Lv.1</span> わんこを探そう</li>
+        <li><span class="lv">Lv.2</span> わんこだ！</li>
+        <li><span class="lv">Lv.4</span> 柴かも？</li>
+        <li><span class="lv">Lv.5</span> 柴っぽい</li>
+        <li><span class="lv">Lv.6</span> 柴だ！</li>
+        <li><span class="lv">Lv.7</span> 本柴</li>
+        <li><span class="lv">Lv.8</span> 柴の申し子</li>
+        <li><span class="lv">Lv.9</span> 純血柴犬</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <h2>PRIVACY</h2>
+    <div class="privacy-block">
+      <ul>
+        <li>カメラ映像・写真データは端末内でのみ処理し、外部へ送信しません。</li>
+        <li>位置情報・広告ID・個人情報は収集しません。</li>
+        <li>写真ライブラリへの書き込みは「認定証を保存」操作時のみです。</li>
+        <li>外部SDKやアナリティクスサービスを使用していません。</li>
+      </ul>
+      <a class="privacy-link" href="privacy-policy">プライバシーポリシー全文 →</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 SHIBANITY &nbsp;·&nbsp;
+    <a href="privacy-policy" style="color:inherit">Privacy Policy</a>
+  </footer>
+
+</body>
+</html>
