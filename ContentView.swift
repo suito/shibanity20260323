@@ -9,13 +9,12 @@ import ARKit
 // MARK: - ShibaLevel（レベル設定の一元管理）
 
 enum ShibaLevel: Int, CaseIterable {
-    case lv1 = 1, lv2, lv3, lv4, lv5, lv6, lv7, lv8, lv9
+    case lv1 = 1, lv2, lv4 = 4, lv5, lv6, lv7, lv8, lv9
 
     var name: String {
         switch self {
-        case .lv1: return "わんこ"
-        case .lv2: return "柴犬以外"
-        case .lv3: return "ニセ柴"
+        case .lv1: return "わんこを探そう"
+        case .lv2: return "わんこだ！"
         case .lv4: return "シバの片鱗"
         case .lv5: return "柴犬風味"
         case .lv6: return "ほぼ柴犬"
@@ -25,21 +24,10 @@ enum ShibaLevel: Int, CaseIterable {
         }
     }
 
-    var color: Color {
-        switch self {
-        case .lv1:          return Color(white: 0.55)
-        case .lv2, .lv3:   return .blue
-        case .lv4, .lv5:   return Color(red: 0.2, green: 0.6, blue: 0.6)
-        case .lv6, .lv7:   return .orange
-        case .lv8, .lv9:   return .red
-        }
-    }
-
     var range: Range<Int> {
         switch self {
         case .lv1: return 0..<23
-        case .lv2: return 23..<45
-        case .lv3: return 45..<66
+        case .lv2: return 23..<66
         case .lv4: return 66..<79
         case .lv5: return 79..<90
         case .lv6: return 90..<96
@@ -62,15 +50,7 @@ struct ShibaResult {
     let colorType: String
     let breedName: String
 
-    var level: Int        { shibaLevel.rawValue }
     var levelName: String { shibaLevel.name }
-
-    var displayName: String {
-        guard breedName != "不明" && breedName != "柴犬" && breedName != "その他の犬" else {
-            return levelName
-        }
-        return "\(breedName)？"
-    }
 
     static func from(percentage: Int,
                      colorType: String,
@@ -103,7 +83,6 @@ struct CertificateData: Identifiable {
     let cutoutImage: UIImage
     let result: ShibaResult
     let screenLabel: String?
-    let dogSize: DogSize?
 }
 
 // MARK: - ContentView
@@ -187,48 +166,9 @@ struct ContentView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 60)
                 .padding(.bottom, 12)
-                .background(Color.white.opacity(0.92))
+                .background(Color.white)
 
                 Spacer()
-
-                if camera.isSetupFailed {
-                    Text("カメラの起動に失敗しました")
-                        .foregroundColor(.red)
-                        .padding()
-                        .background(.black.opacity(0.6))
-                        .clipShape(Capsule())
-                        .padding(.bottom, 8)
-                }
-
-                let panelResult = camera.shibaResult ?? ShibaResult.from(percentage: 0, colorType: "不明")
-                // Vision検出とLiDAR平面検出を統合表示
-                let displayLabel = camera.screenLabel ?? camera.lidarScreenLabel
-                if let label = displayLabel {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 11, weight: .bold))
-                        Text("\(label)が検出されました")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(Color(white: 0.15))
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.92))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                }
-                ShibaResultPanel(
-                    result: panelResult,
-                    peakPercentage: camera.peakPercentage,
-                    onReset: { camera.clearResult() }
-                )
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-
-                Spacer().frame(height: 90)
             }
 
             if !camera.isDogDetected {
@@ -264,8 +204,45 @@ struct ContentView: View {
                 }
             }
 
-            VStack {
+            VStack(spacing: 0) {
                 Spacer()
+
+                if camera.isSetupFailed {
+                    Text("カメラの起動に失敗しました")
+                        .foregroundColor(.red)
+                        .padding()
+                        .background(.black.opacity(0.6))
+                        .clipShape(Capsule())
+                        .padding(.bottom, 8)
+                }
+
+                let panelResult = camera.shibaResult ?? ShibaResult.from(percentage: 0, colorType: "不明")
+                let displayLabel = camera.screenLabel ?? camera.lidarScreenLabel
+                if let label = displayLabel {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                            .font(.system(size: 11, weight: .bold))
+                        Text("\(label)が検出されました")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color(white: 0.15))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.92))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+                }
+                ShibaResultPanel(
+                    result: panelResult,
+                    peakPercentage: camera.peakPercentage,
+                    onReset: { camera.clearResult() }
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
+
                 Button(action: { camera.capturePhoto() }) {
                     HStack(spacing: 8) {
                         Image(systemName: "camera.fill")
@@ -276,7 +253,7 @@ struct ContentView: View {
                     }
                     .foregroundColor(camera.isDogDetected ? .white : Color(white: 0.55))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, 32)
                     .background(camera.isDogDetected ? Color.black : Color(white: 0.88))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
@@ -314,6 +291,60 @@ struct ContentView: View {
     }
 }
 
+// MARK: - FabricTexture
+
+private struct FabricTexture: View {
+    var body: some View {
+        Canvas { ctx, size in
+            let spacing: CGFloat = 3.0
+
+            // 経糸（縦）— サンプル参考・より強め
+            var x: CGFloat = 0
+            while x <= size.width {
+                ctx.stroke(
+                    Path { p in
+                        p.move(to: CGPoint(x: x, y: 0))
+                        p.addLine(to: CGPoint(x: x, y: size.height))
+                    },
+                    with: .color(.white.opacity(0.18)),
+                    lineWidth: 0.8
+                )
+                x += spacing
+            }
+
+            // 緯糸（横）
+            var y: CGFloat = 0
+            while y <= size.height {
+                ctx.stroke(
+                    Path { p in
+                        p.move(to: CGPoint(x: 0, y: y))
+                        p.addLine(to: CGPoint(x: size.width, y: y))
+                    },
+                    with: .color(.white.opacity(0.11)),
+                    lineWidth: 0.8
+                )
+                y += spacing
+            }
+
+            // グレイン（節糸・散点）
+            var gx: CGFloat = 1.5
+            var toggle = false
+            while gx <= size.width {
+                var gy: CGFloat = toggle ? 1.5 : spacing * 0.5
+                while gy <= size.height {
+                    let rect = CGRect(x: gx - 0.6, y: gy - 0.6, width: 1.2, height: 1.2)
+                    ctx.fill(Path(ellipseIn: rect), with: .color(.white.opacity(0.07)))
+                    gy += spacing * 4
+                }
+                gx += spacing * 3
+                toggle.toggle()
+            }
+        }
+        .blendMode(.overlay)
+        .allowsHitTesting(false)
+    }
+}
+
 // MARK: - SplashView
 
 struct SplashView: View {
@@ -337,6 +368,7 @@ struct SplashView: View {
     var body: some View {
         ZStack {
             bg.ignoresSafeArea()
+            FabricTexture().ignoresSafeArea()
 
             // 画面タップで閉じる
             Color.clear
@@ -422,11 +454,16 @@ struct ShibaResultPanel: View {
             // Row 1: レベル名 + 大きな柴犬度数字
             HStack(alignment: .bottom, spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
+                    if result.breedName != "不明" && result.breedName != "柴犬" && result.breedName != "その他の犬" {
+                        Text("\(result.breedName)？")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color(white: 0.35))
+                    }
                     Text("SHIBA LEVEL")
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(Color(white: 0.55))
                         .kerning(1.5)
-                    Text(result.displayName)
+                    Text(result.levelName)
                         .font(.system(size: 20, weight: .black))
                         .foregroundColor(Color(white: 0.08))
                 }
@@ -594,9 +631,9 @@ struct CertificateCoreContent: View {
                 .clipped()
             Image("waku2")
                 .resizable()
-                .scaledToFill()
-                .frame(height: 260)
-                .clipped()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+                .scaleEffect(1.4)
                 .allowsHitTesting(false)
         }
         .frame(height: 260)
@@ -644,20 +681,8 @@ struct CertificateView: View {
 
             ScrollView {
                 VStack(spacing: 0) {
-                    // ヘッダー
-                    HStack {
-                        Text("CERTIFICATE")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(Color(white: 0.55))
-                            .kerning(2)
-                        Spacer()
-                        Text(certificateFormattedDate())
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(Color(white: 0.55))
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 60)
-                    .padding(.bottom, 16)
+                    // ヘッダー分のスペース確保
+                    Color.clear.frame(height: 100)
 
                     CertificateCoreContent(data: data)
 
@@ -714,6 +739,25 @@ struct CertificateView: View {
                 }
             }
 
+            // ヘッダー（最前面）
+            VStack {
+                HStack {
+                    Text("CERTIFICATE")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(white: 0.55))
+                        .kerning(2)
+                    Spacer()
+                    Text(certificateFormattedDate())
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(Color(white: 0.55))
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 60)
+                .padding(.bottom, 16)
+                .background(Color(white: 0.94))
+                Spacer()
+            }
+
             // 左下の i ボタン
             VStack {
                 Spacer()
@@ -757,174 +801,37 @@ struct CertificateView: View {
     }
 }
 
-// MARK: - StampView 補助 Shape
-
-private struct ScallopedBorder: Shape {
-    let count: Int
-    func path(in rect: CGRect) -> Path {
-        let cx = rect.midX, cy = rect.midY
-        let r   = min(rect.width, rect.height) / 2.0
-        let bump = r * 0.078
-        let step = 2.0 * Double.pi / Double(count)
-        var path = Path()
-        for i in 0..<count {
-            let a1 = Double(i)     * step - Double.pi / 2.0
-            let a2 = Double(i + 1) * step - Double.pi / 2.0
-            let am = (a1 + a2) / 2.0
-            let p1 = CGPoint(x: cx + r * CGFloat(cos(a1)), y: cy + r * CGFloat(sin(a1)))
-            let p2 = CGPoint(x: cx + r * CGFloat(cos(a2)), y: cy + r * CGFloat(sin(a2)))
-            let ct = CGPoint(x: cx + (r + bump) * CGFloat(cos(am)),
-                             y: cy + (r + bump) * CGFloat(sin(am)))
-            if i == 0 { path.move(to: p1) } else { path.addLine(to: p1) }
-            path.addQuadCurve(to: p2, control: ct)
-        }
-        path.closeSubpath()
-        return path
-    }
-}
-
-private struct StarPath: Shape {
-    let points: Int
-    let innerRatio: CGFloat
-    func path(in rect: CGRect) -> Path {
-        let cx = rect.midX, cy = rect.midY
-        let outerR = min(rect.width, rect.height) / 2.0
-        let innerR = outerR * innerRatio
-        let step = Double.pi / Double(points)
-        var path = Path()
-        for i in 0..<(points * 2) {
-            let a = Double(i) * step - Double.pi / 2.0
-            let r = i % 2 == 0 ? Double(outerR) : Double(innerR)
-            let p = CGPoint(x: cx + CGFloat(r * cos(a)), y: cy + CGFloat(r * sin(a)))
-            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
-        }
-        path.closeSubpath()
-        return path
-    }
-}
-
-private struct SunburstShape: Shape {
-    let rays: Int
-    func path(in rect: CGRect) -> Path {
-        let cx = rect.midX, cy = rect.midY
-        let outerR = Double(min(rect.width, rect.height) / 2.0)
-        let innerR = outerR * 0.06
-        let step = 2.0 * Double.pi / Double(rays)
-        var path = Path()
-        for i in 0..<rays {
-            let a = Double(i) * step
-            path.move(to:    CGPoint(x: cx + CGFloat(innerR * cos(a)), y: cy + CGFloat(innerR * sin(a))))
-            path.addLine(to: CGPoint(x: cx + CGFloat(outerR * cos(a)), y: cy + CGFloat(outerR * sin(a))))
-        }
-        return path
-    }
-}
-
-// MARK: - StampView
-
-struct StampView: View {
-    let result: ShibaResult
-
-    private let stampBlue = Color(red: 0.17, green: 0.33, blue: 0.50)
-    private let stampRed  = Color(red: 0.72, green: 0.10, blue: 0.13)
-    private let sz: CGFloat = 200
-
-    // 上部・下部の星の角度（度）
-    private let topAngles: [Double] = [-150, -120, -90, -60, -30]
-    private let botAngles: [Double] = [210, 240, 270, 300, 330]
-
-    var body: some View {
-        ZStack {
-            // 外周スカラップ縁
-            ScallopedBorder(count: 22)
-                .stroke(stampBlue, lineWidth: 5.5)
-                .frame(width: sz, height: sz)
-
-            // 外側二重円
-            Circle()
-                .stroke(stampBlue, lineWidth: 4)
-                .frame(width: sz * 0.83, height: sz * 0.83)
-            Circle()
-                .stroke(stampBlue, lineWidth: 2)
-                .frame(width: sz * 0.75, height: sz * 0.75)
-
-            // 上部の星（5個）
-            ForEach(topAngles.indices, id: \.self) { i in
-                StarPath(points: 5, innerRatio: 0.42)
-                    .fill(stampBlue)
-                    .frame(width: 17, height: 17)
-                    .offset(
-                        x: sz * 0.36 * CGFloat(cos(topAngles[i] * Double.pi / 180)),
-                        y: sz * 0.36 * CGFloat(sin(topAngles[i] * Double.pi / 180))
-                    )
-            }
-
-            // 下部の星（5個）
-            ForEach(botAngles.indices, id: \.self) { i in
-                StarPath(points: 5, innerRatio: 0.42)
-                    .fill(stampBlue)
-                    .frame(width: 17, height: 17)
-                    .offset(
-                        x: sz * 0.36 * CGFloat(cos(botAngles[i] * Double.pi / 180)),
-                        y: sz * 0.36 * CGFloat(sin(botAngles[i] * Double.pi / 180))
-                    )
-            }
-
-            // サンバースト放射線
-            SunburstShape(rays: 28)
-                .stroke(stampBlue.opacity(0.45), lineWidth: 0.8)
-                .frame(width: sz * 0.56, height: sz * 0.56)
-
-            // CERTIFIED バナー
-            ZStack {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color.black.opacity(0.68))
-                    .frame(width: sz * 0.88, height: sz * 0.25)
-                RoundedRectangle(cornerRadius: 3)
-                    .stroke(stampBlue, lineWidth: 2.5)
-                    .frame(width: sz * 0.88, height: sz * 0.25)
-                RoundedRectangle(cornerRadius: 2)
-                    .stroke(stampBlue.opacity(0.55), lineWidth: 1)
-                    .frame(width: sz * 0.81, height: sz * 0.18)
-                Text("CERTIFIED")
-                    .font(.system(size: sz * 0.152, weight: .black))
-                    .foregroundColor(stampRed)
-                    .kerning(1.2)
-            }
-        }
-        .frame(width: sz, height: sz)
-        .opacity(0.92)
-    }
-}
-
 // MARK: - CertificateCardView（保存用）
 
 struct CertificateCardView: View {
     let data: CertificateData
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text("CERTIFICATE")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(Color(white: 0.55))
-                    .kerning(2)
-                Spacer()
-                Text(certificateFormattedDate())
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(Color(white: 0.55))
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
+        ZStack {
+            Color(white: 0.94)
 
-            CertificateCoreContent(
-                data: data,
-                isStatic: true,
-                footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
-            )
-            .padding(.bottom, 24)
+            VStack(spacing: 0) {
+                HStack {
+                    Text("CERTIFICATE")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(white: 0.55))
+                        .kerning(2)
+                    Spacer()
+                    Text(certificateFormattedDate())
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(Color(white: 0.55))
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 14)
+
+                CertificateCoreContent(
+                    data: data,
+                    isStatic: true,
+                    footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
+                )
+                .padding(.bottom, 24)
+            }
         }
-        .background(Color(white: 0.94))
     }
 }
 
@@ -989,9 +896,11 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
 
     // 柴犬類似度ウェイトテーブル（定数）
     private static let similarityWeight: [String: Double] = [
-        // 日本犬（柴犬度スコアに寄与）
-        "shiba":               1.00,
-        // 西洋犬種（柴犬度スコアに寄与しない）
+        // 柴犬度ウェイト（見た目の柴犬らしさ・種別判定とは独立）
+        "shiba":               1.00,  // 柴犬そのもの
+        "pomeranian":          0.30,  // スピッツ系・雰囲気が近い
+        "other_dog":           0.15,  // 未分類犬（和犬・日本犬の可能性あり）
+        // 以下は柴犬度に寄与しない
         "golden_retriever":    0.00,
         "labrador_retriever":  0.00,
         "poodle":              0.00,
@@ -1008,16 +917,12 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
         "pug":                 0.00,
         "boxer":               0.00,
         "yorkshire_terrier":   0.00,
-        "pomeranian":          0.00,
         "beagle":              0.00,
         "pekingese":           0.00,
     ]
 
     // 日本語犬種名マッピング（定数）
     private static let breedNameJP: [String: String] = [
-        // 日本犬
-        "shiba":               "柴犬",
-        // 西洋犬種
         "golden_retriever":    "ゴールデンレトリーバー",
         "labrador_retriever":  "ラブラドールレトリーバー",
         "poodle":              "トイプードル",
@@ -1391,25 +1296,24 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
             let top1Class      = top1?.identifier ?? "other_dog"
             let top1Confidence = Double(top1?.confidence ?? 0)
 
-            // A-1: 信頼度閾値 — 低信頼度クラスをスコアから除外
-            let confidenceThreshold = 0.15
+            // 柴犬度スコア（種別判定とは独立した見た目のSHIBA-らしさ）
+            // A-1: 低信頼度クラスを除外
+            let confidenceThreshold = 0.10
             let filteredResults = topResults.filter { Double($0.confidence) > confidenceThreshold }
 
-            let similarityScore = filteredResults.reduce(0.0) { sum, obs in
+            let rawScore = filteredResults.reduce(0.0) { sum, obs in
                 let weight = CameraManager.similarityWeight[obs.identifier] ?? 0.0
                 return sum + Double(obs.confidence) * weight
             }
 
-            var percentage = min(Int(similarityScore * 120), 120)
+            // × 150スケール（shiba信頼度 0.67 ≈ 柴犬100%）
+            var percentage = min(Int(rawScore * 150), 120)
 
-            // A-2: Top-1 が other_dog で高信頼度 → スコアを上限30に抑制
-            if top1Class == "other_dog" && top1Confidence >= 0.40 {
-                percentage = min(percentage, 30)
-            }
+            // A-2廃止 — other_dogの多さで柴犬度を抑制しない（種別に依存しない）
 
-            // A-3: Top-1 の信頼度が低い（モデルが迷っている）→ スコアを半減
-            if top1Confidence < 0.25 {
-                percentage = percentage / 2
+            // A-3: 極低信頼度（モデルがほぼ識別不能）のみ軽減
+            if top1Confidence < 0.15 {
+                percentage = Int(Double(percentage) * 0.8)
             }
 
             // displayName用: 信頼度が十分高い場合のみ犬種名を表示
@@ -1427,8 +1331,8 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
             if top1Class != "other_dog" && top1Confidence >= 0.35 {
                 if isPuppySuspect {
                     breedName = "子犬"
-                } else if top1Class == "shiba" && top1Confidence < 0.60 {
-                    // 柴犬に似ているが確信度が中程度 → 和犬の可能性（秋田犬・北海道犬等）
+                } else if top1Class == "shiba" && top1Confidence < 0.45 {
+                    // 柴犬に似ているが確信度が低め → 和犬の可能性（秋田犬・北海道犬等）
                     breedName = "和犬"
                 } else {
                     breedName = CameraManager.breedNameJP[top1Class] ?? "その他の犬"
@@ -1502,15 +1406,13 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
             let resultToUse   = self.shibaResult
                                 ?? ShibaResult.from(percentage: 50, colorType: "不明")
             let capturedLabel = self.screenLabel ?? self.lidarScreenLabel
-            let capturedSize  = self.dogSize
 
             DispatchQueue.main.async {
                 self.isProcessing = false
                 self.certificateData = CertificateData(
                     cutoutImage:  image,
                     result:       resultToUse,
-                    screenLabel:  capturedLabel,
-                    dogSize:      capturedSize
+                    screenLabel:  capturedLabel
                 )
             }
         }
