@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サポート — SHIBANITY</title>
+  <meta name="description" content="SHIBANITYアプリのサポートページです。">
+  <style>
+    :root {
+      --shiba: #c0622b;
+      --shiba-light: #f4e0d0;
+      --dark: #1a1a1a;
+      --text: #333;
+      --muted: #777;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: #faf8f5;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 72px 24px 64px;
+    }
+    .hero .app-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      background: var(--shiba);
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 1.05rem;
+      color: #bbb;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--shiba);
+      letter-spacing: 0.05em;
+    }
+
+    /* FAQ */
+    .faq-block {
+      background: #fff;
+      border-radius: 16px;
+      padding: 8px 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 32px;
+    }
+    .faq-item {
+      border-bottom: 1px solid #ede9e4;
+      padding: 20px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item .q {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    .faq-item .a {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* Contact */
+    .contact-block {
+      background: var(--shiba-light);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    .contact-block p {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    .contact-block a {
+      display: inline-block;
+      background: var(--shiba);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 28px;
+      border-radius: 32px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+    .contact-block a:hover { opacity: 0.8; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-top: 1px solid #e8e4df;
+    }
+    footer a { color: inherit; }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.8rem; }
+      .faq-block { padding: 8px 20px; }
+      .contact-block { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="app-icon">🐕</div>
+    <h1>SHIBANITY</h1>
+    <p>サポートページ</p>
+  </div>
+
+  <div class="section">
+    <h2>よくある質問</h2>
+
+    <div class="faq-block">
+      <div class="faq-item">
+        <div class="q">カメラが起動しません</div>
+        <div class="a">iPhone の「設定」→「プライバシーとセキュリティ」→「カメラ」で SHIBANITY のアクセスが許可されているかご確認ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="q">認定証を保存できません</div>
+        <div class="a">「設定」→「プライバシーとセキュリティ」→「写真」で SHIBANITY が「追加のみ」または「フルアクセス」になっているかご確認ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="q">柴犬度がうまく判定されません</div>
+        <div class="a">明るい場所でわんこ全体がカメラに収まるようにご撮影ください。横向き・逆光・距離が遠すぎる場合は精度が下がることがあります。</div>
+      </div>
+      <div class="faq-item">
+        <div class="q">アプリが途中で落ちることがあります</div>
+        <div class="a">iPhone を再起動してからもう一度お試しください。改善しない場合は下記の問い合わせ先よりご連絡ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="q">個人情報や写真データはどこかに送られますか？</div>
+        <div class="a">すべての処理は端末内で完結します。カメラ映像・写真・個人情報は外部へ一切送信されません。</div>
+      </div>
+    </div>
+
+    <h2>お問い合わせ</h2>
+    <div class="contact-block">
+      <p>ご不明な点やバグ報告は X (Twitter) の DM にてお気軽にどうぞ。<br>お返事までしばらくお時間をいただく場合があります。</p>
+      <a href="https://x.com/suito" target="_blank" rel="noopener">X (Twitter) で連絡する →</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 フジイピカピ &nbsp;·&nbsp;
+    <a href="./">SHIBANITY</a> &nbsp;·&nbsp;
+    <a href="privacy-policy">Privacy Policy</a>
+  </footer>
+
+</body>
+</html>
