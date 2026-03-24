@@ -576,11 +576,8 @@ struct ShibaResultPanel: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
 
-            if footnote != nil {
-                Rectangle().fill(Color(white: 0.88)).frame(height: 1)
-            }
-
             if let footnote {
+                Rectangle().fill(Color(white: 0.88)).frame(height: 1)
                 Text(footnote)
                     .font(.system(size: 11))
                     .foregroundColor(Color(white: 0.5))
@@ -623,6 +620,30 @@ private func certificateFormattedDate() -> String {
     f.locale = Locale(identifier: "ja_JP")
     f.dateFormat = "yyyy年M月d日 認定"
     return f.string(from: Date())
+}
+
+// MARK: - CertificateHeaderView（CertificateView / CertificateCardView 共通ヘッダー）
+
+private struct CertificateHeaderView: View {
+    var topPadding: CGFloat = 60
+    var bottomPadding: CGFloat = 16
+
+    var body: some View {
+        HStack {
+            Text("認定 - CERTIFICATE")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(Color(white: 0.55))
+                .kerning(2)
+            Spacer()
+            Text(certificateFormattedDate())
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(Color(white: 0.55))
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, topPadding)
+        .padding(.bottom, bottomPadding)
+        .background(Color(white: 0.94))
+    }
 }
 
 // MARK: - CertificateCoreContent（CertificateView / CertificateCardView 共通）
@@ -766,20 +787,7 @@ struct CertificateView: View {
 
             // ヘッダー（最前面）
             VStack {
-                HStack {
-                    Text("認定 - CERTIFICATE")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(Color(white: 0.55))
-                        .kerning(2)
-                    Spacer()
-                    Text(certificateFormattedDate())
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(Color(white: 0.55))
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 60)
-                .padding(.bottom, 16)
-                .background(Color(white: 0.94))
+                CertificateHeaderView()
                 Spacer()
             }
 
@@ -849,19 +857,7 @@ struct CertificateCardView: View {
 
             // ヘッダー最前面（waku2のはみ出しより上に配置）
             VStack {
-                HStack {
-                    Text("認定 - CERTIFICATE")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(Color(white: 0.55))
-                        .kerning(2)
-                    Spacer()
-                    Text(certificateFormattedDate())
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(Color(white: 0.55))
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 14)
-                .background(Color(white: 0.94))
+                CertificateHeaderView(topPadding: 14, bottomPadding: 14)
                 Spacer()
             }
         }
@@ -952,6 +948,24 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
         "yorkshire_terrier":   0.00,
         "beagle":              0.00,
         "pekingese":           0.00,
+    ]
+
+    // 画面・写真検出キーワードテーブル（定数）
+    private static let screenLabels: [(keyword: String, displayName: String)] = [
+        ("screen",      "モニター"),
+        ("monitor",     "モニター"),
+        ("television",  "モニター"),
+        ("display",     "モニター"),
+        ("computer",    "モニター"),
+        ("laptop",      "モニター"),
+        ("smartphone",  "モニター"),
+        ("tablet",      "モニター"),
+        ("photograph",  "写真"),
+        ("photo",       "写真"),
+        ("picture",     "写真"),
+        ("poster",      "写真"),
+        ("print",       "写真"),
+        ("book",        "写真"),
     ]
 
     // 日本語犬種名マッピング（定数）
@@ -1270,6 +1284,23 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
 
     // MARK: - 犬種分類（Stage 2）
 
+    private func applyFallback(_ result: ShibaResult, bounds: [CGRect], generation: Int) {
+        DispatchQueue.main.async {
+            guard self.detectionGeneration == generation else { return }
+            if !self.isDogDetected { self.isDogDetected = true }
+            self.dogBounds = bounds
+
+            let now = Date()
+            guard now.timeIntervalSince(self.lastResultUpdateTime) >= self.resultUpdateInterval else { return }
+            self.lastResultUpdateTime = now
+
+            self.shibaResult = result
+            if result.percentage > self.peakPercentage {
+                self.peakPercentage = result.percentage
+            }
+        }
+    }
+
     private func classifyDogBreed(pixelBuffer: CVPixelBuffer,
                                    colorType: String,
                                    bounds: [CGRect],
@@ -1277,21 +1308,7 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
         guard detectionGeneration == generation else { return }
         guard let model = dogBreedModel,
               let bbox = bounds.first else {
-            let fallback = ShibaResult.from(percentage: 30, colorType: colorType)
-            DispatchQueue.main.async {
-                guard self.detectionGeneration == generation else { return }
-                self.isDogDetected = true
-                self.dogBounds = bounds
-
-                let now = Date()
-                guard now.timeIntervalSince(self.lastResultUpdateTime) >= self.resultUpdateInterval else { return }
-                self.lastResultUpdateTime = now
-
-                self.shibaResult = fallback
-                if fallback.percentage > self.peakPercentage {
-                    self.peakPercentage = fallback.percentage
-                }
-            }
+            applyFallback(ShibaResult.from(percentage: 30, colorType: colorType), bounds: bounds, generation: generation)
             return
         }
 
@@ -1308,13 +1325,7 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
 
         let croppedCI = ciImage.cropped(to: cropRect)
         guard let cgImage = ciContext.createCGImage(croppedCI, from: croppedCI.extent) else {
-            let fallback = ShibaResult.from(percentage: 30, colorType: colorType)
-            DispatchQueue.main.async {
-                guard self.detectionGeneration == generation else { return }
-                self.isDogDetected = true
-                self.dogBounds = bounds
-                self.shibaResult = fallback
-            }
+            applyFallback(ShibaResult.from(percentage: 30, colorType: colorType), bounds: bounds, generation: generation)
             return
         }
 
@@ -1341,8 +1352,6 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
 
             // × 150スケール（shiba信頼度 0.67 ≈ 柴犬100%）
             var percentage = min(Int(rawScore * 150), 120)
-
-            // A-2廃止 — other_dogの多さで柴犬度を抑制しない（種別に依存しない）
 
             // A-3: 極低信頼度（モデルがほぼ識別不能）のみ軽減
             if top1Confidence < 0.15 {
@@ -1384,22 +1393,7 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
                 self.bestResult = result
             }
 
-            let capturedResult     = result
-            let capturedPercentage = percentage
-            DispatchQueue.main.async {
-                guard self.detectionGeneration == generation else { return }
-                self.isDogDetected = true
-                self.dogBounds = bounds
-
-                let now = Date()
-                guard now.timeIntervalSince(self.lastResultUpdateTime) >= self.resultUpdateInterval else { return }
-                self.lastResultUpdateTime = now
-
-                self.shibaResult = capturedResult
-                if capturedPercentage > self.peakPercentage {
-                    self.peakPercentage = capturedPercentage
-                }
-            }
+            self.applyFallback(result, bounds: bounds, generation: generation)
         }
 
         request.imageCropAndScaleOption = .scaleFill
@@ -1462,28 +1456,11 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
             guard let self,
                   let results = req.results as? [VNClassificationObservation] else { return }
 
-            let screenLabels: [(keyword: String, displayName: String)] = [
-                ("screen",      "モニター"),
-                ("monitor",     "モニター"),
-                ("television",  "モニター"),
-                ("display",     "モニター"),
-                ("computer",    "モニター"),
-                ("laptop",      "モニター"),
-                ("smartphone",  "モニター"),
-                ("tablet",      "モニター"),
-                ("photograph",  "写真"),
-                ("photo",       "写真"),
-                ("picture",     "写真"),
-                ("poster",      "写真"),
-                ("print",       "写真"),
-                ("book",        "写真"),
-            ]
-
             var detected: String? = nil
             for obs in results {
                 if obs.confidence < 0.25 { break }
                 let id = obs.identifier.lowercased()
-                if let match = screenLabels.first(where: { id.contains($0.keyword) }) {
+                if let match = Self.screenLabels.first(where: { id.contains($0.keyword) }) {
                     detected = match.displayName
                     break
                 }
