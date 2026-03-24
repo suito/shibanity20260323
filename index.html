@@ -61,13 +61,17 @@
     }
     .btn-topbar:hover { opacity: 0.82; }
 
+    /* ── HERO SECTION（iPhoneがはみ出す包括ラッパー） ── */
+    .hero-section {
+      position: relative;
+      margin-bottom: 54px; /* 40pxはみ出し + 余白 */
+    }
+
     /* ── HERO CARD ── */
     .hero-card {
-      background: var(--card);
       border-radius: 22px;
-      /* overflow hidden は hero-image 側に移動 */
+      overflow: hidden;
       box-shadow: 0 2px 20px rgba(0,0,0,0.09);
-      overflow: hidden; /* tab-nav用 */
     }
 
     /* Tab nav */
@@ -95,19 +99,12 @@
     .tab-nav a:hover  { background: var(--text); color: #fff; border-color: var(--text); }
     .tab-nav a.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-    /* Hero body: photo left + phone right */
-    .hero-body {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      min-height: 420px;
-      overflow: visible;
-    }
-
-    /* Hero image */
+    /* Hero image（全幅） */
     .hero-image {
       position: relative;
+      aspect-ratio: 16 / 7;
+      min-height: 380px;
       overflow: hidden;
-      min-height: 420px;
       background: #b89870;
     }
     .hero-image img.hero-photo {
@@ -196,14 +193,12 @@
     .btn-ico svg { width: 11px; height: 11px; }
     .btn-secondary .btn-ico { background: rgba(0,0,0,0.10); }
 
-    /* Hero phone panel */
-    .hero-phone-panel {
-      background: var(--bg);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 20px 20px 0;
-      overflow: visible;
+    /* Hero iPhoneフロート（.hero-section基準でabsolute） */
+    .hero-phone-float {
+      position: absolute;
+      right: 48px;
+      bottom: -40px; /* 背景画像から40pxはみ出す */
+      z-index: 10;
     }
 
     /* ── iPHONE MOCKUP ── */
@@ -240,8 +235,7 @@
     .iphone-mockup.hero-phone {
       --mock-w: 196px;
       width: var(--mock-w);
-      margin-bottom: -48px; /* カードの下に少しはみ出す */
-      filter: drop-shadow(0 16px 40px rgba(0,0,0,0.28));
+      filter: drop-shadow(0 20px 48px rgba(0,0,0,0.35));
     }
 
     /* App Preview内のiPhone */
@@ -402,10 +396,10 @@
         padding: 12px 16px;
       }
 
-      .hero-card  { border-radius: 0; box-shadow: none; overflow: hidden; }
-      .hero-body  { grid-template-columns: 1fr; }
-      .hero-phone-panel { display: none; }
-      .hero-image { min-height: 440px; }
+      .hero-section { margin-bottom: 20px; }
+      .hero-card  { border-radius: 0; box-shadow: none; }
+      .hero-phone-float { display: none; }
+      .hero-image { aspect-ratio: unset; min-height: 440px; }
       .hero-overlay { padding: 24px 20px; }
       .hero-overlay h1 { font-size: 1.75rem; }
       .hero-btns  { flex-direction: column; }
@@ -443,23 +437,22 @@
       <a class="btn-topbar" href="support">サポート</a>
     </div>
 
-    <!-- Hero card -->
-    <div class="hero-card">
+    <!-- Hero section（iPhoneのabsolute配置基準） -->
+    <div class="hero-section">
 
-      <!-- Tab nav -->
-      <nav class="tab-nav">
-        <a href="#" class="active">アプリについて</a>
-        <a href="#features">機能</a>
-        <a href="#apppreview">スクリーン</a>
-        <a href="#privacy">プライバシー</a>
-        <a href="support">サポート</a>
-        <a href="privacy-policy">Privacy Policy</a>
-      </nav>
+      <!-- Hero card -->
+      <div class="hero-card">
+        <!-- Tab nav -->
+        <nav class="tab-nav">
+          <a href="#" class="active">アプリについて</a>
+          <a href="#features">機能</a>
+          <a href="#apppreview">スクリーン</a>
+          <a href="#privacy">プライバシー</a>
+          <a href="support">サポート</a>
+          <a href="privacy-policy">Privacy Policy</a>
+        </nav>
 
-      <!-- Hero body: photo(left) + phone(right) -->
-      <div class="hero-body">
-
-        <!-- Left: background photo + text -->
+        <!-- Hero image（全幅） -->
         <div class="hero-image">
           <img class="hero-photo" src="hero.jpg" alt="柴犬カム">
           <div class="hero-overlay">
@@ -483,19 +476,19 @@
             </div>
           </div>
         </div>
+      </div><!-- /hero-card -->
 
-        <!-- Right: iPhone mockup -->
-        <div class="hero-phone-panel">
-          <div class="iphone-mockup hero-phone">
-            <div class="iphone-screen">
-              <img src="screen-top.jpg" alt="アプリ画面">
-            </div>
-            <img class="iphone-frame" src="iphone-frame.png" alt="">
+      <!-- iPhoneモックアップ：背景画像に重なり下40pxはみ出す -->
+      <div class="hero-phone-float">
+        <div class="iphone-mockup hero-phone">
+          <div class="iphone-screen">
+            <img src="screen-top.jpg" alt="アプリ画面">
           </div>
+          <img class="iphone-frame" src="iphone-frame.png" alt="">
         </div>
+      </div>
 
-      </div><!-- /hero-body -->
-    </div><!-- /hero-card -->
+    </div><!-- /hero-section -->
 
     <!-- Features + 夕日の散歩写真 -->
     <div class="section" id="features">
