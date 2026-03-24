@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サポート — 柴犬カム</title>
+  <meta name="description" content="柴犬カムアプリのサポートページです。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #f0ece6;
+      --shiba:  #f98f21;
+      --text:   #1a1a1a;
+      --muted:  #666;
+      --dim:    #999;
+      --card:   #ffffff;
+      --inner:  #f0ece6;
+      --border: rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 20px 20px 0;
+    }
+    .page-wrap { max-width: 760px; margin: 0 auto; }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 4px 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .brand-name { font-size: 0.95rem; font-weight: 700; line-height: 1.2; }
+    .brand-sub  { font-size: 0.7rem;  color: var(--muted); letter-spacing: 0.02em; }
+    .nav-wrap { position: relative; }
+    .hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 10px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .hamburger:hover { background: rgba(0,0,0,0.07); }
+    .hamburger svg { width: 22px; height: 22px; }
+    .global-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .global-nav a {
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .global-nav a:hover { background: rgba(0,0,0,0.07); }
+    .global-nav a.active {
+      background: var(--shiba);
+      color: #fff;
+    }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 40px 40px 36px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.09);
+      margin-bottom: 14px;
+    }
+    .page-hero .page-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: var(--shiba);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .page-hero h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 34px 38px;
+      margin-top: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .section-label {
+      font-family: 'Roboto', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #7d4811;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    /* FAQ */
+    .faq-wrap {
+      background: var(--inner);
+      border-radius: 16px;
+      padding: 4px 24px;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item .q {
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .faq-item .a {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* Contact */
+    .contact-wrap {
+      background: rgba(249,143,33,0.1);
+      border: 1px solid rgba(249,143,33,0.22);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    .contact-wrap p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.75;
+    }
+    .contact-wrap a {
+      display: inline-block;
+      background: var(--shiba);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 13px 32px;
+      border-radius: 32px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .contact-wrap a:hover { opacity: 0.85; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 36px 24px;
+      font-size: 0.78rem;
+      color: var(--dim);
+    }
+    footer a { color: var(--dim); text-decoration: none; }
+    footer a:hover { color: var(--muted); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      body { padding: 0; }
+
+      .top-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(240,236,230,0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 12px 16px;
+      }
+
+      .page-hero { border-radius: 0; box-shadow: none; padding: 28px 18px; }
+      .section   { border-radius: 0; box-shadow: none; padding: 28px 18px; margin-top: 8px; }
+      footer     { padding: 24px 16px; }
+
+      .hamburger { display: flex; }
+      .global-nav {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 8px;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+        min-width: 180px;
+        z-index: 200;
+      }
+      .global-nav.open { display: flex; }
+      .global-nav a {
+        padding: 10px 16px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a class="brand" href="./">
+        <img class="brand-icon" src="icon.png" alt="柴犬カム">
+        <div>
+          <div class="brand-name">柴犬カム</div>
+          <div class="brand-sub">Shiba-dog-cam</div>
+        </div>
+      </a>
+      <div class="nav-wrap">
+        <button class="hamburger" aria-label="メニューを開く" onclick="this.nextElementSibling.classList.toggle('open')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <nav class="global-nav">
+          <a href="./">トップ</a>
+          <a href="support" class="active">サポート</a>
+          <a href="privacy-policy">プライバシーポリシー</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Page hero -->
+    <div class="page-hero">
+      <div class="page-label">Support</div>
+      <h1>サポートページ</h1>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+      <div class="section-label">FAQ</div>
+      <div class="faq-wrap">
+        <div class="faq-item">
+          <div class="q">カメラが起動しません</div>
+          <div class="a">iPhone の「設定」→「プライバシーとセキュリティ」→「カメラ」で 柴犬カム のアクセスが許可されているかご確認ください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">認定証を保存できません</div>
+          <div class="a">「設定」→「プライバシーとセキュリティ」→「写真」で 柴犬カム が「追加のみ」または「フルアクセス」になっているかご確認ください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">柴犬度がうまく判定されません</div>
+          <div class="a">明るい場所でわんこ全体がカメラに収まるようにご撮影ください。横向き・逆光・距離が遠すぎる場合は精度が下がることがあります。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">アプリが途中で落ちることがあります</div>
+          <div class="a">iPhone を再起動してからもう一度お試しください。改善しない場合は下記の問い合わせ先よりご連絡ください。</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">個人情報や写真データはどこかに送られますか？</div>
+          <div class="a">すべての処理は端末内で完結します。カメラ映像・写真・個人情報は外部へ一切送信されません。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="section">
+      <div class="section-label">お問い合わせ</div>
+      <div class="contact-wrap">
+        <p>ご不明な点やバグ報告はこちらのフォームからお気軽にどうぞ。<br>お返事までしばらくお時間をいただく場合があります。</p>
+        <a href="https://forms.gle/uMn7Lk6CgPTH3x1AA" target="_blank" rel="noopener">お問い合わせフォーム →</a>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2026 フジイピカピ &nbsp;·&nbsp;
+      <a href="./">トップ</a> &nbsp;·&nbsp;
+      <a href="privacy-policy">Privacy Policy</a>
+    </footer>
+
+  </div>
+  <script>
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-wrap')) {
+        document.querySelectorAll('.global-nav').forEach(function(n) {
+          n.classList.remove('open');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

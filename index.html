@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>柴犬カム — Shiba-dog-cam</title>
+  <meta name="description" content="カメラに映ったわんこの「柴犬度」をAIで判定するiOSアプリ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #f0ece6;
+      --shiba:  #f98f21;
+      --text:   #1a1a1a;
+      --muted:  #666;
+      --dim:    #999;
+      --card:   #ffffff;
+      --inner:  #f0ece6;
+      --border: rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 20px 20px 0;
+    }
+    .page-wrap { max-width: 1080px; margin: 0 auto; }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 4px 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .brand-name { font-size: 0.95rem; font-weight: 700; line-height: 1.2; }
+    .brand-sub  { font-size: 0.7rem;  color: var(--muted); letter-spacing: 0.02em; }
+    .nav-wrap { position: relative; }
+    .hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 10px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .hamburger:hover { background: rgba(0,0,0,0.07); }
+    .hamburger svg { width: 22px; height: 22px; }
+    .global-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .global-nav a {
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .global-nav a:hover { background: rgba(0,0,0,0.07); }
+    .global-nav a.active {
+      background: var(--shiba);
+      color: #fff;
+    }
+
+    /* ── HERO SECTION（iPhoneがはみ出す包括ラッパー） ── */
+    .hero-section {
+      position: relative;
+      margin-bottom: 54px; /* 40pxはみ出し + 余白 */
+    }
+
+    /* ── HERO CARD ── */
+    .hero-card {
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.09);
+    }
+
+
+    /* Hero image（全幅） */
+    .hero-image {
+      position: relative;
+      aspect-ratio: 16 / 7;
+      min-height: 380px;
+      overflow: hidden;
+      background: #b89870;
+    }
+    .hero-image img.hero-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left 40%;
+      display: block;
+    }
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top,
+        rgba(0,0,0,0.72) 0%,
+        rgba(0,0,0,0.18) 45%,
+        transparent 70%);
+      pointer-events: none;
+    }
+    .hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 36px 40px;
+      z-index: 1;
+    }
+    .hero-overlay .hero-eyebrow {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+    .hero-overlay h1 {
+      font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.22;
+      margin-bottom: 10px;
+      max-width: 80%;
+    }
+    .hero-overlay p {
+      font-size: 1rem;
+      color: rgb(240 235 229);
+      margin-bottom: 24px;
+      line-height: 1.65;
+    }
+    .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--shiba);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 11px 24px;
+      border-radius: 32px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255,255,255,0.9);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 11px 24px;
+      border-radius: 32px;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: #fff; }
+    .btn-ico {
+      width: 20px;
+      height: 20px;
+      background: rgba(0,0,0,0.22);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-ico svg { width: 11px; height: 11px; }
+    .btn-secondary .btn-ico { background: rgba(0,0,0,0.10); }
+
+    /* Hero iPhoneフロート（.hero-section基準でabsolute） */
+    .hero-phone-float {
+      position: absolute;
+      right: 17px;
+      bottom: -40px; /* 背景画像から40pxはみ出す */
+      z-index: 10;
+    }
+
+    /* ── iPHONE MOCKUP ── */
+    .iphone-mockup {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .iphone-mockup .iphone-screen {
+      position: absolute;
+      /* 450×920フレームでのスクリーン位置 (%) */
+      top: 0.65%;
+      left: 2.9%;
+      right: 2.9%;
+      bottom: 1.4%;
+      border-radius: calc(var(--mock-w) * 0.17);
+      overflow: hidden;
+    }
+    .iphone-mockup .iphone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+      margin-top: 7px;
+    }
+    .iphone-mockup .iphone-frame {
+      width: 100%;
+      display: block;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Hero内のiPhone */
+    .iphone-mockup.hero-phone {
+      --mock-w: 196px;
+      width: var(--mock-w);
+      filter: drop-shadow(0 20px 48px rgba(0,0,0,0.35));
+    }
+
+    /* App Preview内のiPhone */
+    .iphone-mockup.preview-phone {
+      --mock-w: 220px;
+      width: var(--mock-w);
+      filter: drop-shadow(0 12px 32px rgba(0,0,0,0.20));
+    }
+
+    /* ── CONTENT SECTIONS ── */
+    .section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 34px 38px;
+      margin-top: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .section-label {
+      font-family: 'Roboto', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #7d4811;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    /* ── FEATURES with side photo ── */
+    .features-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 18px;
+      align-items: start;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .feature {
+      background: var(--inner);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .feature .icon {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      background: rgba(249,143,33,0.12);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--shiba);
+    }
+    .feature .icon svg { width: 22px; height: 22px; }
+    .feature-text h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .feature-text p  { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+    .features-photo {
+      border-radius: 16px;
+      overflow: hidden;
+      height: 100%;
+      min-height: 240px;
+    }
+    .features-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── APP PREVIEW (Levels置き換え) ── */
+    .apppreview-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: center;
+    }
+    .apppreview-text h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .apppreview-text p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .shiba-levels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .shiba-level-tag {
+      display: inline-block;
+      background: var(--inner);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .shiba-level-tag .lv {
+      color: var(--shiba);
+      font-weight: 800;
+      margin-right: 4px;
+    }
+
+    /* ── PRIVACY ── */
+    .privacy-wrap {
+      background: var(--inner);
+      border-radius: 16px;
+      padding: 22px 26px;
+    }
+    .privacy-wrap ul {
+      padding-left: 1.2em;
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+    .privacy-wrap ul li { margin-bottom: 8px; line-height: 1.6; }
+    .privacy-link {
+      display: inline-block;
+      margin-top: 16px;
+      color: var(--shiba);
+      font-size: 0.87rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(249,143,33,0.38);
+    }
+    .privacy-link:hover { border-color: var(--shiba); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 56px 24px 36px; /* 上余白はiPhoneのはみ出し分 */
+      font-size: 0.78rem;
+      color: var(--dim);
+    }
+    footer a { color: var(--dim); text-decoration: none; }
+    footer a:hover { color: var(--muted); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 680px) {
+      body { padding: 0; }
+
+      .top-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(240,236,230,0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 12px 16px;
+      }
+
+      .hero-section { margin-bottom: 20px; }
+      .hero-card  { border-radius: 0; box-shadow: none; }
+      .hero-phone-float { display: none; }
+      .hero-image { aspect-ratio: unset; min-height: 440px; }
+      .hero-image::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom,
+          rgba(0,0,0,0.40) 0%,
+          transparent 38%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .hero-overlay { padding: 24px 20px; }
+      .hero-overlay h1 { font-size: 1.75rem; }
+      .hero-btns  { flex-direction: column; }
+      .btn-primary, .btn-secondary { justify-content: center; padding: 14px 24px; }
+
+      .section { border-radius: 0; box-shadow: none; padding: 28px 18px; margin-top: 8px; }
+
+      .features-layout { grid-template-columns: 1fr; }
+      .features-photo  { display: none; }
+
+      .apppreview-layout { grid-template-columns: 1fr; }
+      .iphone-mockup.preview-phone {
+        --mock-w: 180px;
+        width: var(--mock-w);
+        margin: 0 auto;
+        display: block;
+      }
+
+      footer { padding: 32px 16px 24px; }
+
+      .hamburger { display: flex; }
+      .global-nav {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 8px;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+        min-width: 180px;
+        z-index: 200;
+      }
+      .global-nav.open { display: flex; }
+      .global-nav a {
+        padding: 10px 16px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <a class="brand" href="./">
+        <img class="brand-icon" src="icon.png" alt="柴犬カム">
+        <div>
+          <div class="brand-name">柴犬カム</div>
+          <div class="brand-sub">Shiba-dog-cam</div>
+        </div>
+      </a>
+      <div class="nav-wrap">
+        <button class="hamburger" aria-label="メニューを開く" onclick="this.nextElementSibling.classList.toggle('open')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <nav class="global-nav">
+          <a href="./" class="active">トップ</a>
+          <a href="support">サポート</a>
+          <a href="privacy-policy">プライバシーポリシー</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Hero section（iPhoneのabsolute配置基準） -->
+    <div class="hero-section">
+
+      <!-- Hero card -->
+      <div class="hero-card">
+        <!-- Hero image（全幅） -->
+        <div class="hero-image">
+          <img class="hero-photo" src="hero.jpg" alt="柴犬カム">
+          <div class="hero-overlay">
+            <h1>犬しか撮れないカメラアプリの開発に成功！！<br>「柴犬カム」で、愛犬にズームイン！</h1>
+            <p>「柴犬カム」は柴犬ランクをリアルタイム算出します。<br>愛犬の柴犬度を量ろう！<br>もちろん柴犬以外も熱烈歓迎です。</p>
+            <div class="hero-btns">
+              <a href="#" class="btn-primary" id="appstore-link">
+                <span class="btn-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                  </svg>
+                </span>App Storeで「柴犬カム」を入手
+              </a>
+              <a href="#features" class="btn-secondary">
+                <span class="btn-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                </span>機能を見る
+              </a>
+            </div>
+          </div>
+        </div>
+      </div><!-- /hero-card -->
+
+      <!-- iPhoneモックアップ：背景画像に重なり下40pxはみ出す -->
+      <div class="hero-phone-float">
+        <div class="iphone-mockup hero-phone">
+          <div class="iphone-screen">
+            <img src="screen-top.jpg" alt="アプリ画面">
+          </div>
+          <img class="iphone-frame" src="iphone-frame.png" alt="">
+        </div>
+      </div>
+
+    </div><!-- /hero-section -->
+
+    <!-- Features + 夕日の散歩写真 -->
+    <div class="section" id="features">
+      <div class="section-label">Features</div>
+      <div class="features-layout">
+        <div class="features">
+          <div class="feature">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>リアルタイム判定</h3>
+              <p>カメラを向けるだけで柴犬度をリアルタイムにスコアリング。</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>認定証を発行</h3>
+              <p>撮影結果をもとに「柴犬認定証」を自動生成。写真ライブラリに保存できます。</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                <rect x="9" y="9" width="6" height="6" rx="1"/>
+                <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>オンデバイスAI</h3>
+              <p>すべての判定は端末内で完結。通信不要、個人情報の送信なし。</p>
+            </div>
+          </div>
+        </div>
+        <div class="features-photo">
+          <img src="scene-sunset.jpg" alt="">
+        </div>
+      </div>
+    </div>
+
+    <!-- App Preview（Shiba Level置き換え） -->
+    <div class="section" id="apppreview">
+      <div class="section-label">App Preview</div>
+      <div class="apppreview-layout">
+        <div class="apppreview-text">
+          <h3>リアルタイムで<br>柴犬度を判定</h3>
+          <p>カメラに映ったわんこをAIが即座に解析。SHIBA LEVELのスコアがリアルタイムで更新されます。</p>
+          <p>スコアに応じて称号が変わり、ピーク値も記録。「写真を撮る」で認定証を生成できます。</p>
+        </div>
+        <div class="iphone-mockup preview-phone">
+          <div class="iphone-screen">
+            <img src="screen-sample.png" alt="アプリ画面サンプル">
+          </div>
+          <img class="iphone-frame" src="iphone-frame.png" alt="">
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy -->
+    <div class="section" id="privacy">
+      <div class="section-label">Privacy</div>
+      <div class="privacy-wrap">
+        <ul>
+          <li>カメラ映像・写真データは端末内でのみ処理し、外部へ送信しません。</li>
+          <li>位置情報・広告ID・個人情報は収集しません。</li>
+          <li>写真ライブラリへの書き込みは「認定証を保存」操作時のみです。</li>
+          <li>外部SDKやアナリティクスサービスを使用していません。</li>
+        </ul>
+        <a class="privacy-link" href="privacy-policy">プライバシーポリシー全文 →</a>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2026 フジイピカピ &nbsp;·&nbsp;
+      <a href="support">Support</a> &nbsp;·&nbsp;
+      <a href="privacy-policy">Privacy Policy</a>
+    </footer>
+
+  </div>
+  <script>
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-wrap')) {
+        document.querySelectorAll('.global-nav').forEach(function(n) {
+          n.classList.remove('open');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
