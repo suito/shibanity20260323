@@ -130,9 +130,8 @@ struct ContentView: View {
                         let c = VNImageRectForNormalizedRect(
                             rect, Int(geo.size.width), Int(geo.size.height)
                         )
-                        Circle()
-                            .stroke(Color.orange.opacity(0.4), lineWidth: 3)
-                            .frame(width: max(c.width, c.height), height: max(c.width, c.height))
+                        let size = max(c.width, c.height)
+                        DogRippleView(size: size)
                             .position(x: c.midX, y: geo.size.height - c.midY)
                     }
                 }
@@ -292,6 +291,19 @@ struct ContentView: View {
         .sheet(isPresented: $showInfo) {
             SplashView()
         }
+    }
+}
+
+// MARK: - DogRippleView
+
+private struct DogRippleView: View {
+    let size: CGFloat
+
+    var body: some View {
+        Circle()
+            .stroke(Color.orange.opacity(0.35), lineWidth: 4)
+            .blur(radius: 2.5)
+            .frame(width: size, height: size)
     }
 }
 
