@@ -52,17 +52,26 @@
     }
     .brand-name { font-size: 0.95rem; font-weight: 700; line-height: 1.2; }
     .brand-sub  { font-size: 0.7rem;  color: var(--muted); letter-spacing: 0.02em; }
-    .btn-topbar {
+    .global-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .global-nav a {
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .global-nav a:hover { background: rgba(0,0,0,0.07); }
+    .global-nav a.active {
       background: var(--shiba);
       color: #fff;
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 9px 22px;
-      border-radius: 24px;
-      text-decoration: none;
-      transition: opacity 0.2s;
     }
-    .btn-topbar:hover { opacity: 0.82; }
 
     /* ── HERO SECTION（iPhoneがはみ出す包括ラッパー） ── */
     .hero-section {
@@ -77,30 +86,6 @@
       box-shadow: 0 2px 20px rgba(0,0,0,0.09);
     }
 
-    /* Tab nav */
-    .tab-nav {
-      display: flex;
-      gap: 7px;
-      padding: 15px 18px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-    .tab-nav::-webkit-scrollbar { display: none; }
-    .tab-nav a {
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 22px;
-      border: 1.5px solid #ccc8c4;
-      font-size: 0.84rem;
-      font-weight: 500;
-      color: var(--text);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-    .tab-nav a:hover  { background: var(--text); color: #fff; border-color: var(--text); }
-    .tab-nav a.active { background: var(--text); color: #fff; border-color: var(--text); }
 
     /* Hero image（全幅） */
     .hero-image {
@@ -439,7 +424,11 @@
           <div class="brand-sub">Shiba-dog-cam</div>
         </div>
       </a>
-      <a class="btn-topbar" href="support">サポート</a>
+      <nav class="global-nav">
+        <a href="./" class="active">トップ</a>
+        <a href="support">サポート</a>
+        <a href="privacy-policy">プライバシーポリシー</a>
+      </nav>
     </div>
 
     <!-- Hero section（iPhoneのabsolute配置基準） -->
@@ -447,16 +436,6 @@
 
       <!-- Hero card -->
       <div class="hero-card">
-        <!-- Tab nav -->
-        <nav class="tab-nav">
-          <a href="#" class="active">アプリについて</a>
-          <a href="#features">機能</a>
-          <a href="#apppreview">スクリーン</a>
-          <a href="#privacy">プライバシー</a>
-          <a href="support">サポート</a>
-          <a href="privacy-policy">Privacy Policy</a>
-        </nav>
-
         <!-- Hero image（全幅） -->
         <div class="hero-image">
           <img class="hero-photo" src="hero.jpg" alt="柴犬カム">
