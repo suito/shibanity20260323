@@ -14,8 +14,11 @@
       --text:         rgba(255,255,255,0.90);
       --muted:        rgba(255,255,255,0.55);
       --dim:          rgba(255,255,255,0.32);
-      --card:         rgba(255,255,255,0.07);
-      --card-border:  rgba(255,255,255,0.12);
+      --card:         #ffffff;
+      --card-border:  rgba(0,0,0,0.06);
+      --section-bg:   #e4e4e4;
+      --section-text: #1a1a1a;
+      --section-muted:#555;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -89,8 +92,11 @@
     /* Section */
     .section {
       max-width: 760px;
-      margin: 0 auto;
-      padding: 64px 24px;
+      margin: 32px auto;
+      padding: 40px 32px;
+      background: var(--section-bg);
+      border-radius: 20px;
+      color: var(--section-text);
     }
     .section h2 {
       font-size: 0.78rem;
@@ -114,8 +120,8 @@
       padding: 28px 24px;
     }
     .feature .icon { font-size: 2rem; margin-bottom: 12px; }
-    .feature h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: #fff; }
-    .feature p  { font-size: 0.86rem; color: var(--muted); }
+    .feature h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--section-text); }
+    .feature p  { font-size: 0.86rem; color: var(--section-muted); }
 
     /* Levels */
     .levels {
@@ -138,9 +144,9 @@
       align-items: baseline;
       gap: 12px;
       padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
       font-size: 0.9rem;
-      color: var(--text);
+      color: var(--section-text);
     }
     .level-list li:last-child { border-bottom: none; }
     .level-list .lv {
@@ -159,7 +165,7 @@
     }
     .privacy-block ul {
       padding-left: 1.2em;
-      color: var(--muted);
+      color: var(--section-muted);
       font-size: 0.9rem;
     }
     .privacy-block ul li { margin-bottom: 8px; }
