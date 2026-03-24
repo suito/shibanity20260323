@@ -48,13 +48,14 @@
       width: 108px;
       height: 108px;
       border-radius: 24px;
-      background: var(--shiba);
       margin: 0 auto 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 56px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .hero .app-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
     .hero h1 {
       font-size: 2.6rem;
@@ -199,7 +200,7 @@
 <body>
 
   <div class="hero">
-    <div class="app-icon">🐕</div>
+    <div class="app-icon"><img src="icon.png" alt="柴犬カム"></div>
     <h1>柴犬カム</h1>
     <p>Shiba-dog-cam — カメラに映ったわんこの「柴犬度」をAIがリアルタイム判定。あなたの愛犬は何レベル？</p>
     <a class="btn-appstore" href="#" id="appstore-link">App Store で入手（準備中）</a>
