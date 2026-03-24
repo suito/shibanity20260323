@@ -8,10 +8,11 @@
 
 /* Begin PBXFileReference section */
 		E45775842F6802F2009D3A4D /* SHIBANITY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SHIBANITY.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4C107352F70DC9400C87FEF /* SHIBANITY.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SHIBANITY.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E45775862F6802F2009D3A4D /* SHIBANITY */ = {
+		E45775862F6802F2009D3A4D /* . */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = .;
 			sourceTree = "<group>";
@@ -32,7 +33,7 @@
 		E457757B2F6802F2009D3A4D = {
 			isa = PBXGroup;
 			children = (
-				E45775862F6802F2009D3A4D /* SHIBANITY */,
+				E45775862F6802F2009D3A4D /* . */,
 				E45775852F6802F2009D3A4D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -42,6 +43,11 @@
 			children = (
 				E45775842F6802F2009D3A4D /* SHIBANITY.app */,
 			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E4C107362F70DC9400C87FEF /* Products */ = {
+			isa = PBXGroup;
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -61,7 +67,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E45775862F6802F2009D3A4D /* SHIBANITY */,
+				E45775862F6802F2009D3A4D /* . */,
 			);
 			name = SHIBANITY;
 			packageProductDependencies = (
@@ -97,6 +103,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E45775852F6802F2009D3A4D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E4C107362F70DC9400C87FEF /* Products */;
+					ProjectRef = E4C107352F70DC9400C87FEF /* SHIBANITY.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E45775832F6802F2009D3A4D /* SHIBANITY */,
@@ -251,6 +263,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "柴犬カム";
 				INFOPLIST_KEY_NSCameraUsageDescription = "カメラでわんこの柴犬度を判定します";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "認定証をライブラリに保存します";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -296,6 +309,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "柴犬カム";
 				INFOPLIST_KEY_NSCameraUsageDescription = "カメラでわんこの柴犬度を判定します";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "認定証をライブラリに保存します";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

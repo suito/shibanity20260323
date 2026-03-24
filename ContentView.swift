@@ -83,6 +83,8 @@ struct CertificateData: Identifiable {
     let cutoutImage: UIImage
     let result: ShibaResult
     let screenLabel: String?
+    // landscape VN midX = portrait画像内の縦位置（.oriented(.right)による90°回転で変換）
+    let dogCenterY: CGFloat
 }
 
 // MARK: - ContentView
@@ -128,9 +130,9 @@ struct ContentView: View {
                         let c = VNImageRectForNormalizedRect(
                             rect, Int(geo.size.width), Int(geo.size.height)
                         )
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.orange, lineWidth: 3)
-                            .frame(width: c.width, height: c.height)
+                        Circle()
+                            .stroke(Color.orange.opacity(0.4), lineWidth: 3)
+                            .frame(width: max(c.width, c.height), height: max(c.width, c.height))
                             .position(x: c.midX, y: geo.size.height - c.midY)
                     }
                 }
@@ -139,7 +141,7 @@ struct ContentView: View {
 
             VStack(spacing: 0) {
                 HStack {
-                    Text("SHIBANITY")
+                    Text("柴犬カム")
                         .font(.system(.title2, design: .default, weight: .black))
                         .foregroundColor(Color(white: 0.08))
                     Spacer()
@@ -167,6 +169,26 @@ struct ContentView: View {
                 .padding(.top, 60)
                 .padding(.bottom, 12)
                 .background(Color.white)
+
+                // アラートメッセージ（ヘッダー直下・カメラ映像上・ギザギザ前景）
+                if let label = camera.screenLabel ?? camera.lidarScreenLabel {
+                    HStack(spacing: 6) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                            .font(.system(size: 11, weight: .bold))
+                        Text("\(label)が検出されました")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color(white: 0.15))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.92))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
                 Spacer()
             }
@@ -217,24 +239,6 @@ struct ContentView: View {
                 }
 
                 let panelResult = camera.shibaResult ?? ShibaResult.from(percentage: 0, colorType: "不明")
-                let displayLabel = camera.screenLabel ?? camera.lidarScreenLabel
-                if let label = displayLabel {
-                    HStack(spacing: 6) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 11, weight: .bold))
-                        Text("\(label)が検出されました")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(Color(white: 0.15))
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.92))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.orange.opacity(0.5), lineWidth: 1))
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                }
                 ShibaResultPanel(
                     result: panelResult,
                     peakPercentage: camera.peakPercentage,
@@ -385,21 +389,28 @@ struct SplashView: View {
                     .frame(width: 150, height: 150)
                     .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
 
-                Text("SHIBANITY")
+                Text("柴犬カム")
                     .font(.system(size: 36, weight: .black))
                     .foregroundColor(.white)
                     .kerning(4)
                     .padding(.top, 36)
                     .padding(.bottom, 28)
 
-                Text("© 2026 3cm")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.white.opacity(0.65))
-                    .padding(.bottom, 10)
+                Text("わんこ専用カメラアプリです。\n犬種判別にご協力いただいた\n越谷わんこたちとその主さまに\n感謝でございます。")
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.white.opacity(0.75))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+                    .padding(.bottom, 28)
+
+                Text("© 2026 フジイピカピ")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white.opacity(0.55))
+                    .padding(.bottom, 8)
 
                 Text("Version \(appVersion)")
-                    .font(.system(size: 13))
-                    .foregroundColor(.white.opacity(0.40))
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.35))
 
                 Spacer()
             }
@@ -464,7 +475,7 @@ struct ShibaResultPanel: View {
                         .foregroundColor(Color(white: 0.55))
                         .kerning(1.5)
                     Text(result.levelName)
-                        .font(.system(size: 20, weight: .black))
+                        .font(.system(size: 24, weight: .black))
                         .foregroundColor(Color(white: 0.08))
                 }
                 Spacer()
@@ -486,87 +497,87 @@ struct ShibaResultPanel: View {
 
             Rectangle().fill(Color(white: 0.88)).frame(height: 1)
 
-            if !isStatic {
-                // Row 2: リセット | プログレスバー | PEAK
-                HStack(spacing: 10) {
-                    if let onReset {
-                        Button(action: onReset) {
-                            HStack(spacing: 3) {
-                                Image(systemName: "arrow.counterclockwise")
-                                    .font(.system(size: 10, weight: .bold))
-                                Text("リセット")
-                                    .font(.system(size: 10, weight: .bold))
-                            }
-                            .foregroundColor(Color(white: 0.35))
-                        }
-                    }
-
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            Rectangle().fill(Color(white: 0.9)).frame(height: 3)
-                            Rectangle()
-                                .fill(Color.orange)
-                                .frame(width: geo.size.width * shownProgress, height: 3)
-                                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: animatedProgress)
-                            if peakPercentage > 0 {
-                                let peakX = geo.size.width * CGFloat(peakPercentage) / 100
-                                Rectangle()
-                                    .fill(Color(white: 0.35))
-                                    .frame(width: 1.5, height: 10)
-                                    .position(x: peakX, y: 5)
-                            }
-                        }
-                    }
-                    .frame(height: 3)
-
-                    if peakPercentage > 0 {
-                        Text("PEAK \(peakPercentage)%")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(Color(white: 0.5))
-                            .kerning(0.5)
-                            .fixedSize()
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-
-                Rectangle().fill(Color(white: 0.88)).frame(height: 1)
-
-                // Row 3: 12段階タブ（横スクロール・アクティブ自動追従）
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 6) {
-                            ForEach(ShibaLevel.allCases, id: \.self) { level in
+            // Row 2: メーターバー（ラベル付き・カメラ・認定画面で共通）
+            VStack(spacing: 6) {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        // グレー背景（0〜100%の範囲）
+                        Rectangle()
+                            .fill(Color(white: 0.9))
+                            .frame(width: geo.size.width, height: 3)
+                            .position(x: geo.size.width / 2, y: 6)
+                        // セクションラベル（十分な幅があるセクションのみ）
+                        ForEach(ShibaLevel.allCases, id: \.self) { level in
+                            let startPct = CGFloat(level.range.lowerBound)
+                            let endPct   = CGFloat(level.range.upperBound)
+                            let centerX  = geo.size.width * (startPct + endPct) / 200
+                            if startPct < 100 && (endPct - startPct) >= 10 {
                                 Text(level.name)
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(level == result.shibaLevel ? .white : Color(white: 0.45))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 5)
-                                    .background(level == result.shibaLevel ? Color.black : Color.clear)
-                                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(level == result.shibaLevel ? Color.clear : Color(white: 0.78), lineWidth: 1)
-                                    )
-                                    .id(level)
+                                    .font(.system(size: 7, weight: .medium))
+                                    .foregroundColor(level == result.shibaLevel ? .orange : Color(white: 0.6))
+                                    .fixedSize()
+                                    .position(x: centerX, y: 23)
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                    }
-                    .onChange(of: result.shibaLevel) { _, newLevel in
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            proxy.scrollTo(newLevel, anchor: .center)
+                        // 各SHIBA LEVELの閾値目盛り（100%未満のみ）
+                        ForEach(Array(ShibaLevel.allCases.dropFirst()).filter { $0.range.lowerBound < 100 }, id: \.self) { level in
+                            Rectangle()
+                                .fill(Color(white: 0.68))
+                                .frame(width: 1, height: 9)
+                                .position(x: geo.size.width * CGFloat(level.range.lowerBound) / 100, y: 6)
+                        }
+                        // プログレスバー（100%超で右に突き抜ける）
+                        Rectangle()
+                            .fill(Color.orange)
+                            .frame(width: geo.size.width * shownProgress, height: 3)
+                            .position(x: geo.size.width * shownProgress / 2, y: 6)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.8), value: animatedProgress)
+                        // 100%境界マーカー（正常上限の演出）
+                        Rectangle()
+                            .fill(Color(white: 0.2))
+                            .frame(width: 2, height: 16)
+                            .position(x: geo.size.width, y: 6)
+                        // PEAKマーカー
+                        if peakPercentage > 0 {
+                            let peakX = geo.size.width * CGFloat(peakPercentage) / 100
+                            Rectangle()
+                                .fill(Color(white: 0.35))
+                                .frame(width: 1.5, height: 10)
+                                .position(x: peakX, y: 6)
                         }
                     }
-                    .onAppear {
-                        proxy.scrollTo(result.shibaLevel, anchor: .center)
+                }
+                .frame(height: 32)
+
+                // リセット / PEAK（カメラ画面のみ）
+                if !isStatic, onReset != nil || peakPercentage > 0 {
+                    HStack {
+                        if let onReset {
+                            Button(action: onReset) {
+                                HStack(spacing: 3) {
+                                    Image(systemName: "arrow.counterclockwise")
+                                        .font(.system(size: 10, weight: .bold))
+                                    Text("リセット")
+                                        .font(.system(size: 10, weight: .bold))
+                                }
+                                .foregroundColor(Color(white: 0.35))
+                            }
+                        }
+                        Spacer()
+                        if peakPercentage > 0 {
+                            Text("PEAK \(peakPercentage)%")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundColor(Color(white: 0.5))
+                                .kerning(0.5)
+                        }
                     }
                 }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
 
-                if footnote != nil {
-                    Rectangle().fill(Color(white: 0.88)).frame(height: 1)
-                }
+            if footnote != nil {
+                Rectangle().fill(Color(white: 0.88)).frame(height: 1)
             }
 
             if let footnote {
@@ -624,16 +635,30 @@ struct CertificateCoreContent: View {
     var body: some View {
         // 写真 + waku2
         ZStack {
-            Image(uiImage: data.cutoutImage)
-                .resizable()
-                .scaledToFill()
-                .frame(height: 260)
-                .clipped()
+            // 犬の縦位置を中心に来るようにクロップ調整（1.2倍ズーム）
+            GeometryReader { geo in
+                let imgSize   = data.cutoutImage.size
+                let zoom: CGFloat = 1.2
+                let scaleX    = geo.size.width * zoom / imgSize.width
+                let scaledW   = imgSize.width  * scaleX
+                let scaledH   = imgSize.height * scaleX
+                let excessH   = max(0, scaledH - geo.size.height)
+                // カメラ画面より20%上方へシフト（フレーム高さ基準）
+                let upwardShift = geo.size.height * 0.04
+                let rawOffset = geo.size.height / 2 - data.dogCenterY * scaledH - upwardShift
+                let clampedOffset = max(-excessH, min(0, rawOffset))
+
+                Image(uiImage: data.cutoutImage)
+                    .resizable()
+                    .frame(width: scaledW, height: max(scaledH, geo.size.height))
+                    .offset(x: -(scaledW - geo.size.width) / 2, y: clampedOffset)
+            }
+            .clipped()
             Image("waku2")
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: .infinity)
-                .scaleEffect(1.4)
+                .scaleEffect(1.9)
                 .allowsHitTesting(false)
         }
         .frame(height: 260)
@@ -742,7 +767,7 @@ struct CertificateView: View {
             // ヘッダー（最前面）
             VStack {
                 HStack {
-                    Text("CERTIFICATE")
+                    Text("認定 - CERTIFICATE")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(Color(white: 0.55))
                         .kerning(2)
@@ -811,8 +836,21 @@ struct CertificateCardView: View {
             Color(white: 0.94)
 
             VStack(spacing: 0) {
+                // ヘッダー高さ分の余白（最前面レイヤーのヘッダーと揃える）
+                Color.clear.frame(height: 48)
+
+                CertificateCoreContent(
+                    data: data,
+                    isStatic: true,
+                    footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
+                )
+                .padding(.bottom, 24)
+            }
+
+            // ヘッダー最前面（waku2のはみ出しより上に配置）
+            VStack {
                 HStack {
-                    Text("CERTIFICATE")
+                    Text("認定 - CERTIFICATE")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(Color(white: 0.55))
                         .kerning(2)
@@ -823,13 +861,8 @@ struct CertificateCardView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 14)
-
-                CertificateCoreContent(
-                    data: data,
-                    isStatic: true,
-                    footnote: "上記の犬は柴犬度\(data.result.percentage)%と認定されました"
-                )
-                .padding(.bottom, 24)
+                .background(Color(white: 0.94))
+                Spacer()
             }
         }
     }
@@ -1407,12 +1440,16 @@ class CameraManager: NSObject, ObservableObject, ARSessionDelegate {
                                 ?? ShibaResult.from(percentage: 50, colorType: "不明")
             let capturedLabel = self.screenLabel ?? self.lidarScreenLabel
 
+            // landscape VN midX = portrait画像(.oriented(.right))内の縦位置
+            let dogCenterY = self.dogBounds.first.map { $0.midX } ?? 0.5
+
             DispatchQueue.main.async {
                 self.isProcessing = false
                 self.certificateData = CertificateData(
                     cutoutImage:  image,
                     result:       resultToUse,
-                    screenLabel:  capturedLabel
+                    screenLabel:  capturedLabel,
+                    dogCenterY:   dogCenterY
                 )
             }
         }
