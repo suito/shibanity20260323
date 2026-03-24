@@ -184,9 +184,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
       flex-shrink: 0;
     }
+    .btn-ico svg { width: 13px; height: 13px; }
     .btn-secondary .btn-ico { background: rgba(0,0,0,0.10); }
 
     /* ── CONTENT SECTIONS ── */
@@ -227,7 +227,18 @@
       align-items: flex-start;
       gap: 16px;
     }
-    .feature .icon  { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
+    .feature .icon {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      background: rgba(192,98,43,0.12);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--shiba);
+    }
+    .feature .icon svg { width: 22px; height: 22px; }
     .feature-text h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
     .feature-text p  { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
     .features-photo {
@@ -397,10 +408,18 @@
           <p>Shiba-dog-cam — オンデバイスAIがリアルタイムにスコアリング。<br>あなたの愛犬は何レベル？</p>
           <div class="hero-btns">
             <a href="#" class="btn-primary" id="appstore-link">
-              <span class="btn-ico">↓</span>App Storeで入手
+              <span class="btn-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+              </span>App Storeで入手
             </a>
             <a href="#features" class="btn-secondary">
-              <span class="btn-ico">🐕</span>機能を見る
+              <span class="btn-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+              </span>機能を見る
             </a>
           </div>
         </div>
@@ -414,21 +433,40 @@
       <div class="features-layout">
         <div class="features">
           <div class="feature">
-            <div class="icon">📷</div>
+            <div class="icon">
+              <!-- Camera -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
             <div class="feature-text">
               <h3>リアルタイム判定</h3>
               <p>カメラを向けるだけで柴犬度をリアルタイムにスコアリング。</p>
             </div>
           </div>
           <div class="feature">
-            <div class="icon">🏅</div>
+            <div class="icon">
+              <!-- Award -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
             <div class="feature-text">
               <h3>認定証を発行</h3>
               <p>撮影結果をもとに「柴犬認定証」を自動生成。写真ライブラリに保存できます。</p>
             </div>
           </div>
           <div class="feature">
-            <div class="icon">🤖</div>
+            <div class="icon">
+              <!-- CPU chip -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                <rect x="9" y="9" width="6" height="6" rx="1"/>
+                <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>
+              </svg>
+            </div>
             <div class="feature-text">
               <h3>オンデバイスAI</h3>
               <p>すべての判定は端末内で完結。通信不要、個人情報の送信なし。</p>
