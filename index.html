@@ -27,6 +27,15 @@
       line-height: 1.7;
       padding: 20px 20px 0;
     }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('bg-manga.png') center center / cover no-repeat;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: -1;
+    }
     .page-wrap { max-width: 1080px; margin: 0 auto; }
 
     /* ── TOP BAR ── */
