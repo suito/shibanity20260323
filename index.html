@@ -378,6 +378,29 @@
       margin-right: 4px;
     }
 
+    /* ── STAMP ── */
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .stamp-grid img {
+      width: 100%;
+      border-radius: 14px;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .stamp-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 680px) {
+      .stamp-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    }
+
     /* ── PRIVACY ── */
     .privacy-wrap {
       background: var(--inner);
@@ -620,6 +643,17 @@
           </div>
           <img class="iphone-frame" src="iphone-frame.png" alt="">
         </div>
+      </div>
+    </div>
+
+    <!-- Stamp -->
+    <div class="section" id="stamp">
+      <div class="section-label">Stamp</div>
+      <p class="stamp-desc">認定証にスタンプを押して、わんこの個性を表現しよう。13種類のスタンプから選んで写真ライブラリに保存できます。</p>
+      <div class="stamp-grid">
+        <img src="stamp-1.jpg" alt="スタンプ例：柴ドリル">
+        <img src="stamp-2.jpg" alt="スタンプ例：焼き立てパン">
+        <img src="stamp-3.jpg" alt="スタンプ例：虚無">
       </div>
     </div>
 
