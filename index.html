@@ -340,14 +340,31 @@
       align-items: center;
       justify-content: center;
     }
+    .features-scene-wrap {
+      position: relative;
+      margin-top: 18px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
     .features-scene {
       width: 100%;
       height: 220px;
       object-fit: cover;
       object-position: center 60%;
-      border-radius: 14px;
       display: block;
-      margin-top: 18px;
+    }
+    .features-scene-caption {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0,0,0,0.38);
+      padding: 4px 10px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
 
@@ -594,7 +611,10 @@
               <p>すべての判定は端末内で完結。通信不要、個人情報の送信なし。</p>
             </div>
           </div>
-          <img src="scene-sunset.jpg" alt="" class="features-scene">
+          <div class="features-scene-wrap">
+            <img src="scene-sunset.jpg" alt="" class="features-scene">
+            <span class="features-scene-caption">史上初の柴王に認定されたナツさん</span>
+          </div>
         </div>
         <div class="features-phone">
           <div class="iphone-mockup preview-phone">
