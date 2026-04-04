@@ -326,57 +326,12 @@
     .feature .icon svg { width: 22px; height: 22px; }
     .feature-text h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
     .feature-text p  { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
-    .features-photo {
-      border-radius: 16px;
-      overflow: hidden;
-      height: 100%;
-      min-height: 240px;
-    }
-    .features-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .features-phone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* ── APP PREVIEW (Levels置き換え) ── */
-    .apppreview-layout {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 32px;
-      align-items: center;
-    }
-    .apppreview-text h3 {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-    .apppreview-text p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 10px;
-    }
-    .shiba-levels {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 16px;
-    }
-    .shiba-level-tag {
-      display: inline-block;
-      background: var(--inner);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    .shiba-level-tag .lv {
-      color: var(--shiba);
-      font-weight: 800;
-      margin-right: 4px;
-    }
 
     /* ── STAMP ── */
     .stamp-grid {
@@ -470,7 +425,7 @@
       .section { border-radius: 0; box-shadow: none; padding: 28px 18px; margin-top: 8px; }
 
       .features-layout { grid-template-columns: 1fr; }
-      .features-photo  { display: none; }
+      .features-phone  { display: none; }
 
       .apppreview-layout { grid-template-columns: 1fr; }
       .iphone-mockup.preview-phone {
@@ -579,7 +534,7 @@
 
     </div><!-- /hero-section -->
 
-    <!-- Features + 夕日の散歩写真 -->
+    <!-- Features + iPhoneモックアップ -->
     <div class="section" id="features">
       <div class="section-label">Features</div>
       <div class="features-layout">
@@ -593,7 +548,7 @@
             </div>
             <div class="feature-text">
               <h3>リアルタイム判定</h3>
-              <p>カメラを向けるだけで柴犬度をリアルタイムにスコアリング。</p>
+              <p>カメラを向けるだけで柴犬度をリアルタイムにスコアリング。SHIBA LEVELの称号とピーク値も記録。</p>
             </div>
           </div>
           <div class="feature">
@@ -605,7 +560,7 @@
             </div>
             <div class="feature-text">
               <h3>認定証を発行</h3>
-              <p>撮影結果をもとに「柴犬認定証」を自動生成。写真ライブラリに保存できます。</p>
+              <p>撮影結果をもとに「柴犬認定証」を自動生成。13種類のスタンプを押して写真ライブラリに保存できます。</p>
             </div>
           </div>
           <div class="feature">
@@ -622,26 +577,13 @@
             </div>
           </div>
         </div>
-        <div class="features-photo">
-          <img src="scene-sunset.jpg" alt="">
-        </div>
-      </div>
-    </div>
-
-    <!-- App Preview（Shiba Level置き換え） -->
-    <div class="section" id="apppreview">
-      <div class="section-label">App Preview</div>
-      <div class="apppreview-layout">
-        <div class="apppreview-text">
-          <h3>リアルタイムで<br>柴犬度を判定</h3>
-          <p>カメラに映ったわんこをAIが即座に解析。SHIBA LEVELのスコアがリアルタイムで更新されます。</p>
-          <p>スコアに応じて称号が変わり、ピーク値も記録。「写真を撮る」で認定証を生成できます。</p>
-        </div>
-        <div class="iphone-mockup preview-phone">
-          <div class="iphone-screen">
-            <img src="screen-sample.png" alt="アプリ画面サンプル">
+        <div class="features-phone">
+          <div class="iphone-mockup preview-phone">
+            <div class="iphone-screen">
+              <img src="screen-sample.png" alt="アプリ画面サンプル">
+            </div>
+            <img class="iphone-frame" src="iphone-frame.png" alt="">
           </div>
-          <img class="iphone-frame" src="iphone-frame.png" alt="">
         </div>
       </div>
     </div>
