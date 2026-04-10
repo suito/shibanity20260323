@@ -390,6 +390,39 @@
     }
 
 
+    /* ── WHAT'S NEW ── */
+    .whatsnew-item {
+      background: var(--inner);
+      border-radius: 14px;
+      padding: 22px 26px;
+    }
+    .whatsnew-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .whatsnew-version {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: var(--shiba);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .whatsnew-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .whatsnew-list {
+      padding-left: 1.2em;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .whatsnew-list strong { color: var(--text); }
+
     /* ── STAMP ── */
     .stamp-grid {
       display: grid;
@@ -650,6 +683,22 @@
             <img class="iphone-frame" src="iphone-frame.png" alt="">
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- What's New -->
+    <div class="section" id="whatsnew">
+      <div class="section-label">What's New</div>
+      <div class="whatsnew-item">
+        <div class="whatsnew-header">
+          <span class="whatsnew-version">v1.2.1</span>
+          <span class="whatsnew-date">2026年4月</span>
+        </div>
+        <ul class="whatsnew-list">
+          <li>対応犬種を <strong>20種 → 23種</strong> に拡大</li>
+          <li>新対応：<strong>ビションフリーゼ・レイクランドテリア・トイプードル</strong></li>
+          <li>判定モデルの精度向上</li>
+        </ul>
       </div>
     </div>
 
